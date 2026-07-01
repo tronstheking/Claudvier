@@ -1,0 +1,54 @@
+/* VARIABLES & DESIGN SYSTEM */
+:root {
+  --font-display: 'DM Sans', sans-serif;
+  --font-body: 'Inter', sans-serif;
+  --sidebar-width: 90px;
+  --border-radius-sm: 10px;
+  --border-radius-md: 16px;
+  --border-radius-lg: 24px;
+  --transition-smooth: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  
+  /* Stage colors */
+  --color-stage-nuevo: #7c4dff;
+  --color-stage-contactado: #3f51b5;
+  --color-stage-interesado: #ff9800;
+  --color-stage-negociando: #ff5722;
+  --color-stage-inscrito: #4caf50;
+  --color-stage-perdido: #e91e63;
+}
+
+[data-theme="dark"] {
+  --color-bg: #0e1124;
+  --color-surface: #161933;
+  --color-text: #e3e5f2;
+  --color-text-muted: #8e93b3;
+  --color-primary: #f7ac05;
+  --color-success: #4caf50;
+  --color-warning: #ff5722;
+  --color-error: #f48fb1;
+  --color-gold: #f7ac05;
+  --color-border: #242a54;
+  --color-input-bg: #0f1227;
+  --color-hover: #1e2242;
+  --color-shadow: rgba(0, 0, 0, 0.5);
+  --color-shadow-lg: rgba(0, 0, 0, 0.7);
+  --color-primary-text: #0e1124;
+}
+
+[data-theme="light"] {
+  --color-bg: #f3f4f8;
+  --color-surface: #ffffff;
+  --color-text: #181b31;
+  --color-text-muted: #6b708d;
+  --color-primary: #20264a;
+  --color-success: #388e3c;
+  --color-warning: #f57c00;
+  --color-error: #d81b60;
+  --color-gold: #f7ac05;
+  --color-border: #e2e5f0;
+  --color-input-bg: #ffffff;
+  --color-hover: #eaedf5;
+  --color-shadow: rgba(32, 38, 74, 0.05);
+  --color-shadow-lg: rgba(32, 38, 74, 0.1);
+  --color-primary-text: #ffffff;
+}
