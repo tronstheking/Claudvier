@@ -1,0 +1,3137 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="light">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CRM Academia CTD</title>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@700&family=Inter:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/views.css">
+</head>
+
+<body>
+
+  <!-- LOGIN SCREEN OVERLAY -->
+  <div id="login-screen" class="login-screen" style="display: flex;">
+    <div class="login-bg-glow glow-1"></div>
+    <div class="login-bg-glow glow-2"></div>
+    <div class="login-bg-glow glow-3"></div>
+    <div class="login-container">
+      <div class="login-logo-group">
+        <div class="login-logo">
+          <img src="logo-academy.png" alt="CTD Logo" style="width: 100%; height: 100%; object-fit: contain;">
+        </div>
+        <h2 data-translate="brandName">Academia CTD</h2>
+        <p data-translate="brandSub">CRM de Gestión Administrativa</p>
+      </div>
+      <form id="login-form" onsubmit="handleLogin(event)">
+        <div class="form-group">
+          <label for="login-username">Usuario / Coordinador *</label>
+          <div class="login-input-wrapper">
+            <i data-lucide="user" class="login-input-icon"></i>
+            <input type="text" id="login-username" placeholder="Escribe tu nombre..." required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="login-password">Contraseña *</label>
+          <div class="login-input-wrapper">
+            <i data-lucide="lock" class="login-input-icon"></i>
+            <input type="password" id="login-password" placeholder="Contraseña de acceso" required>
+            <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility(event)">
+              <i data-lucide="eye" id="password-toggle-icon"></i>
+            </button>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary login-submit-btn">
+          Ingresar al CRM <i data-lucide="arrow-right"
+            style="width: 16px; height: 16px; margin-left: 6px; vertical-align: middle;"></i>
+        </button>
+      </form>
+      <!-- Info credentials tip -->
+      <div style="margin-top: 22px; text-align: center; font-size: 11px; color: var(--color-text-muted); border-top: 1px dashed var(--color-border); padding-top: 15px;">
+        <span style="display: block; font-weight: 600; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">Acceso del Sistema</span>
+        <div style="display: flex; justify-content: center; gap: 8px; flex-wrap: wrap;">
+          <span title="Usuario: admin / Contraseña: admin" style="background: rgba(109, 170, 69, 0.08); color: var(--color-success); border: 1px solid rgba(109, 170, 69, 0.2); padding: 4px 8px; border-radius: var(--border-radius-sm); cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='rgba(109, 170, 69, 0.15)'" onmouseout="this.style.background='rgba(109, 170, 69, 0.08)'" onclick="document.getElementById('login-username').value='admin'; document.getElementById('login-password').value='admin';">🔑 Admin</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- MOBILE SIDEBAR OVERLAY -->
+  <div id="sidebar-overlay" class="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+  <!-- SIDEBAR NAVIGATION -->
+  <aside id="app-sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-logo">
+        <img src="logo-academy.png" alt="CTD Logo" style="width: 100%; height: 100%; object-fit: contain;">
+      </div>
+      <div class="brand-name">
+        <h4 data-translate="brandName">Academia CTD</h4>
+        <span data-translate="brandSub">CRM Administrativo</span>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="#" class="nav-item active" id="nav-dashboard" onclick="setView('dashboard')">
+        <i data-lucide="layout-dashboard"></i> <span>Dashboard</span>
+      </a>
+      <a href="#" class="nav-item" id="nav-alumnos" onclick="setView('alumnos')">
+        <i data-lucide="users"></i> <span data-translate="clientLabel">Alumnos</span>
+      </a>
+      <a href="#" class="nav-item" id="nav-pipeline" onclick="setView('pipeline')">
+        <i data-lucide="kanban"></i> <span>Pipeline (Kanban)</span>
+      </a>
+      <a href="#" class="nav-item" id="nav-tareas" onclick="setView('tareas')">
+        <i data-lucide="check-square"></i> <span>Tareas</span>
+      </a>
+      <a href="#" class="nav-item" id="nav-calendario" onclick="setView('calendario')">
+        <i data-lucide="calendar"></i> <span>Calendario de Pagos</span>
+      </a>
+      <a href="#" class="nav-item" id="nav-finanzas" onclick="setView('finanzas')">
+        <i data-lucide="dollar-sign"></i> <span>Finanzas</span>
+      </a>
+      <a href="#" class="nav-item" id="nav-reportes" onclick="setView('reportes')">
+        <i data-lucide="bar-chart-2"></i> <span>Reportes</span>
+      </a>
+      <a href="#" class="nav-item" id="nav-cursos" onclick="setView('cursos')">
+        <i data-lucide="graduation-cap"></i> <span data-translate="offeringLabel">Mis Cursos</span>
+      </a>
+      <a href="#" class="nav-item" id="nav-cohortes" onclick="setView('cohortes')">
+        <i data-lucide="layers"></i> <span data-translate="groupLabel">Grupos / Cohortes</span>
+      </a>
+      <a href="#" class="nav-item" id="nav-plantillas" onclick="setView('plantillas')">
+        <i data-lucide="message-square"></i> <span>Plantillas WA</span>
+      </a>
+      <a href="#" class="nav-item" id="nav-ajustes" onclick="setView('ajustes')">
+        <i data-lucide="settings"></i> <span>Ajustes</span>
+      </a>
+    </nav>
+    <div class="sidebar-profile">
+      <div class="profile-avatar" id="sidebar-avatar">AD</div>
+      <div class="profile-info">
+        <h5 id="sidebar-username">Admin CTD</h5>
+        <span>Coordinador General</span>
+      </div>
+      <button onclick="handleLogout()" class="sidebar-logout-btn" title="Cerrar Sesión">
+        <i data-lucide="log-out"></i>
+      </button>
+    </div>
+  </aside>
+
+  <!-- MAIN APP WRAPPER -->
+  <main>
+    <!-- TOPBAR HEADER -->
+    <header>
+      <div class="header-left">
+        <button id="menu-toggle" class="btn btn-ghost hide-desktop btn-icon-sm" onclick="toggleSidebar()">
+          <i data-lucide="menu"></i>
+        </button>
+        <h2 id="view-title">Dashboard</h2>
+      </div>
+      <div class="header-search-container hide-mobile"
+        style="flex-grow: 1; max-width: 400px; margin: 0 32px; position: relative;">
+        <input type="text" id="global-search" placeholder="Buscar alumno, curso o notas..."
+          oninput="handleGlobalSearch(this.value)"
+          style="width: 100%; padding: 10px 16px 10px 40px; background: rgba(255, 255, 255, 0.12); border: 1px solid rgba(255, 255, 255, 0.15); color: #ffffff; border-radius: 20px; font-size: 13px; outline: none; transition: var(--transition-smooth);">
+        <i data-lucide="search"
+          style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; color: rgba(255, 255, 255, 0.5);"></i>
+      </div>
+      <div class="header-right">
+        <!-- Tasa BCV arriba -->
+        <div id="header-bcv-badge"
+          style="display: flex; align-items: center; gap: 8px; background: rgba(255, 255, 255, 0.12); border: 1px solid rgba(255, 255, 255, 0.18); padding: 5px 12px; border-radius: 20px; font-size: 12.5px; font-weight: 600; color: #ffffff; margin-right: 12px; transition: var(--transition-smooth);">
+          <span
+            style="color: #6daa45; font-size: 14px; display: inline-flex; align-items: center; justify-content: center;">💵</span>
+          <span style="letter-spacing: 0.2px;"><span class="bcv-label">BCV:</span> <strong id="header-bcv-rate-value"
+              style="font-weight: 700; color: #6daa45;">36.50</strong> VES</span>
+          <button onclick="fetchTasaBCVAuto(false)" class="btn btn-ghost btn-icon-sm"
+            style="width: 18px; height: 18px; min-width: 18px; padding: 0; margin-left: 2px; color: rgba(255, 255, 255, 0.75); display: inline-flex; align-items: center; justify-content: center; border: none; background: transparent; cursor: pointer; transition: all 0.2s;"
+            title="Actualizar Tasa BCV">
+            <i data-lucide="refresh-cw" style="width: 12px; height: 12px;"></i>
+          </button>
+        </div>
+        <button id="theme-toggle" class="btn btn-ghost btn-icon-sm" onclick="toggleTheme()" title="Cambiar tema"
+          style="display: none; color: #ffffff;">
+          <i id="theme-icon" data-lucide="sun"></i>
+        </button>
+        <div class="notification-bell-container" style="position: relative; margin-right: 8px; display: inline-block;">
+          <button id="bell-toggle" class="btn btn-ghost btn-icon-sm" onclick="toggleNotificationDropdown(event)"
+            title="Notificaciones" style="color: #ffffff; position: relative;">
+            <i data-lucide="bell"></i>
+            <span id="bell-badge" class="badge-count"
+              style="position: absolute; top: -4px; right: -4px; background: var(--color-error); color: white; border-radius: 50%; width: 16px; height: 16px; font-size: 10px; display: none; align-items: center; justify-content: center; font-weight: bold; padding: 0; min-width: 0; box-shadow: 0 0 0 2px var(--color-primary);">0</span>
+          </button>
+          <div id="notification-dropdown" class="notification-dropdown-menu"
+            style="display: none; position: absolute; right: 0; top: 40px; width: 320px; background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--border-radius-md); box-shadow: var(--shadow-lg); z-index: 1000; padding: 12px; max-height: 400px; overflow-y: auto; text-align: left;">
+            <div
+              style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--color-border); padding-bottom: 8px; margin-bottom: 8px;">
+              <span style="font-weight: 600; font-size: 13.5px; color: var(--color-text);">Avisos y Cobranzas</span>
+              <button class="btn btn-ghost" onclick="clearNotifications()"
+                style="font-size: 11px; padding: 2px 6px; color: var(--color-text-muted);">Limpiar</button>
+            </div>
+            <div id="notification-list" style="display: flex; flex-direction: column; gap: 8px;">
+              <!-- Loaded dynamically -->
+            </div>
+          </div>
+        </div>
+        <button class="btn btn-primary" onclick="openStudentModal()" title="Nuevo Alumno (Ctrl+N)"
+          style="background: #ffffff; color: #20264a; border-color: #ffffff; font-weight: 600;">
+          <i data-lucide="plus"></i> <span data-translate="newClientBtn">Nuevo Alumno</span>
+        </button>
+        <div class="header-profile hide-mobile"
+          style="display: flex; align-items: center; gap: 8px; margin-left: 12px;">
+          <span id="header-username" style="font-size: 13px; font-weight: 600; color: #ffffff;">Admin CTD</span>
+          <div id="header-avatar" class="profile-avatar"
+            style="width: 36px; height: 36px; font-size: 12px; font-weight: 700; margin: 0; background: #ffffff; color: #20264a; border: 1px solid rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; border-radius: 50%;">
+            AD</div>
+        </div>
+      </div>
+    </header>
+
+    <section id="view-dashboard" class="view-section">
+      <!-- BACKUP REMINDER BANNER -->
+      <div id="backup-reminder-banner" style="display: none; align-items: center; justify-content: space-between; background: rgba(247, 172, 5, 0.08); border: 1px solid rgba(247, 172, 5, 0.18); padding: 12px 20px; border-radius: 8px; margin-bottom: 20px; font-size: 13px; color: #20264a; width: 100%; box-sizing: border-box;">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span>⚠️</span>
+          <span><strong>Recordatorio de Seguridad:</strong> Hace tiempo que no realizas una copia de seguridad. Te recomendamos respaldar tu base de datos local.</span>
+        </div>
+        <div style="display: flex; gap: 8px;">
+          <button onclick="exportBackupJSON(); dismissBackupReminder();" style="padding: 6px 12px; font-size: 11px; font-weight: 600; background: #f7ac05; color: #fff; border: none; border-radius: 4px; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;">
+            <i data-lucide="download" style="width: 12px; height: 12px;"></i> Respaldar Ahora
+          </button>
+          <button onclick="dismissBackupReminder()" style="padding: 6px 10px; font-size: 11px; color: #666; background: transparent; border: 1px solid #ccc; border-radius: 4px; cursor: pointer;">Descartar</button>
+        </div>
+      </div>
+
+      <!-- META MENSUAL DEL MES -->
+      <div id="monthly-sales-goals"
+        style="background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--border-radius-lg); padding: 16px; margin-bottom: 24px; box-shadow: var(--shadow-sm); display: flex; flex-direction: column; gap: 10px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+          <h3
+            style="font-size: 14.5px; font-weight: 700; color: var(--color-text); display: flex; align-items: center; gap: 6px; margin: 0;">
+            🎯 Meta Comercial del Mes (Junio 2026)
+            <button id="goal-settings-btn" class="btn btn-ghost btn-icon-sm" onclick="openGoalsModal()"
+              style="padding: 2px; border: none; background: transparent; cursor: pointer; color: var(--color-text-muted); display: inline-flex; align-items: center;"
+              title="Configurar Metas">
+              <i data-lucide="settings" style="width: 14px; height: 14px;"></i>
+            </button>
+          </h3>
+          <span style="font-size: 12px; color: var(--color-text-muted);" id="goals-time-remaining">Cargando
+            meta...</span>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
+          <div id="goal-revenue-column">
+            <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 4px;">
+              <span>Recaudación de Inscripciones</span>
+              <span id="goal-revenue-status" style="font-weight: 700;">$0 / $2,000 USD (0%)</span>
+            </div>
+            <div class="bar-track"
+              style="height: 10px; border-radius: 5px; background: var(--color-border); overflow: hidden;">
+              <div id="goal-revenue-bar"
+                style="background-color: var(--color-success); width: 0%; height: 100%; transition: width 0.3s ease;">
+              </div>
+            </div>
+          </div>
+          <div>
+            <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 4px;">
+              <span>Alumnos Inscritos Nuevos</span>
+              <span id="goal-enrollment-status" style="font-weight: 700;">0 / 10 Alumnos (0%)</span>
+            </div>
+            <div class="bar-track"
+              style="height: 10px; border-radius: 5px; background: var(--color-border); overflow: hidden;">
+              <div id="goal-enrollment-bar"
+                style="background-color: var(--color-primary); width: 0%; height: 100%; transition: width 0.3s ease;">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- KPIs GRID -->
+      <div class="kpis-grid">
+        <div class="kpi-card">
+          <div class="kpi-icon-wrapper" style="background: rgba(79, 152, 163, 0.15); color: #4f98a3;">
+            <i data-lucide="users"></i>
+          </div>
+          <div class="kpi-info">
+            <span class="kpi-title">Prospectos</span>
+            <span class="kpi-value" id="kpi-total-prospectos">0</span>
+            <span class="kpi-subtext">Total en sistema</span>
+          </div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-icon-wrapper" style="background: rgba(109, 170, 69, 0.15); color: #6daa45;">
+            <i data-lucide="check-circle"></i>
+          </div>
+          <div class="kpi-info">
+            <span class="kpi-title">Inscritos</span>
+            <span class="kpi-value" id="kpi-inscritos">0</span>
+            <span class="kpi-subtext" id="kpi-conversion">0% de conversión</span>
+          </div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-icon-wrapper" style="background: rgba(209, 99, 167, 0.15); color: #d163a7;">
+            <i data-lucide="flag"></i>
+          </div>
+          <div class="kpi-info">
+            <span class="kpi-title">Alta Prioridad</span>
+            <span class="kpi-value" id="kpi-alta-prioridad">0</span>
+            <span class="kpi-subtext">Requieren contacto</span>
+          </div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-icon-wrapper" style="background: rgba(187, 101, 59, 0.15); color: #bb653b;">
+            <i data-lucide="thumbs-down"></i>
+          </div>
+          <div class="kpi-info">
+            <span class="kpi-title">Perdidos</span>
+            <span class="kpi-value" id="kpi-perdidos">0</span>
+            <span class="kpi-subtext">Oportunidades cerradas</span>
+          </div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-icon-wrapper" style="background: rgba(232, 175, 52, 0.15); color: #e8af34;">
+            <i data-lucide="graduation-cap"></i>
+          </div>
+          <div class="kpi-info">
+            <span class="kpi-title">Cursos</span>
+            <span class="kpi-value" id="kpi-cursos-activos">0</span>
+            <span class="kpi-subtext">Ofertas activas</span>
+          </div>
+        </div>
+        <div class="kpi-card" style="cursor: pointer;" onclick="setView('cohortes')">
+          <div class="kpi-icon-wrapper" style="background: rgba(139, 92, 246, 0.15); color: #8b5cf6;">
+            <i data-lucide="layers"></i>
+          </div>
+          <div class="kpi-info">
+            <span class="kpi-title">Grupos Activos</span>
+            <span class="kpi-value" id="kpi-grupos-activos">0</span>
+            <span class="kpi-subtext">Cohortes en curso</span>
+          </div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-icon-wrapper" style="background: rgba(33, 150, 243, 0.15); color: #2196f3;">
+            <i data-lucide="dollar-sign"></i>
+          </div>
+          <div class="kpi-info">
+            <span class="kpi-title">Por Cobrar</span>
+            <span class="kpi-value" id="kpi-saldo-pendiente">$0 USD</span>
+            <span class="kpi-subtext" id="kpi-saldo-pendiente-sub">Deuda de alumnos</span>
+          </div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-icon-wrapper" style="background: rgba(76, 175, 80, 0.15); color: #4caf50;">
+            <i data-lucide="wallet"></i>
+          </div>
+          <div class="kpi-info">
+            <span class="kpi-title">Ingresos Recaudados</span>
+            <span class="kpi-value" id="kpi-ingresos-recaudados">$0 USD</span>
+            <span class="kpi-subtext">Total cobrado</span>
+          </div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-icon-wrapper" style="background: rgba(109, 170, 69, 0.15); color: #6daa45;">
+            <i data-lucide="trending-up"></i>
+          </div>
+          <div class="kpi-info">
+            <span class="kpi-title">Ingresos Proyectados</span>
+            <span class="kpi-value" id="kpi-ingresos-proyectados">$0 USD</span>
+            <span class="kpi-subtext">Total esperado</span>
+          </div>
+        </div>
+        <div class="kpi-card" style="cursor: pointer;" onclick="setSmartSegment('riesgo_cobro'); setView('alumnos');">
+          <div class="kpi-icon-wrapper" style="background: rgba(244, 67, 54, 0.15); color: var(--color-error);">
+            <i data-lucide="alert-triangle"></i>
+          </div>
+          <div class="kpi-info">
+            <span class="kpi-title">Alumnos en Riesgo</span>
+            <span class="kpi-value" id="kpi-alumnos-riesgo">0</span>
+            <span class="kpi-subtext">Vencidos sin completar pago</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- TOP DASHBOARD ROW: ASSISTANT & OVERDUE TASKS (Opción A) -->
+      <div
+        style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; margin-bottom: 24px; width: 100%;">
+        <!-- SMART ASSISTANT INSIGHTS -->
+        <div class="assistant-card"
+          style="background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--border-radius-lg); padding: 16px; box-shadow: var(--shadow-sm); margin: 0; display: flex; flex-direction: column;">
+          <div
+            style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; border-bottom: 1px solid var(--color-border); padding-bottom: 8px;">
+            <h3
+              style="font-size: 14.5px; font-weight: 700; color: var(--color-text); display: flex; align-items: center; gap: 8px; margin: 0;">
+              🤖 Asistente Virtual: Recomendaciones del Día
+            </h3>
+            <span
+              style="font-size: 11px; font-weight: 600; color: var(--color-primary); background: rgba(32, 38, 74, 0.1); padding: 2px 8px; border-radius: 12px;"
+              id="assistant-insight-count">0 Alertas</span>
+          </div>
+          <div id="assistant-insights-list" style="display: flex; flex-direction: column; gap: 8px;">
+            <!-- Populated dynamically in JS -->
+          </div>
+        </div>
+
+        <!-- OVERDUE FOLLOW-UP TASKS -->
+        <div class="assistant-card"
+          style="background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--border-radius-lg); padding: 16px; border-left: 4px solid var(--color-error); box-shadow: var(--shadow-sm); margin: 0; display: flex; flex-direction: column;">
+          <div
+            style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; border-bottom: 1px solid var(--color-border); padding-bottom: 8px;">
+            <h3
+              style="font-size: 14.5px; font-weight: 700; color: var(--color-text); display: flex; align-items: center; gap: 8px; margin: 0;">
+              ⚠️ Seguimientos Vencidos
+            </h3>
+            <span
+              style="font-size: 11px; font-weight: 600; color: var(--color-error); background: rgba(244, 67, 54, 0.1); padding: 2px 8px; border-radius: 12px;"
+              id="overdue-tasks-count">0 Pendientes</span>
+          </div>
+          <div id="overdue-tasks-list"
+            style="display: flex; flex-direction: column; gap: 8px; max-height: 250px; overflow-y: auto;">
+            <!-- Populated dynamically in JS -->
+          </div>
+        </div>
+      </div>
+
+      <!-- LOGROS COMERCIALES DEL MES (GAMIFICACIÓN) -->
+      <div class="chart-card" style="margin-bottom: 24px; width: 100%;">
+        <h3
+          style="font-size: 14.5px; font-weight: 700; color: var(--color-text); display: flex; align-items: center; gap: 8px; margin-bottom: 16px;">
+          🏆 Logros y Reconocimientos Comerciales
+        </h3>
+        <div id="gamification-badges-grid"
+          style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; width: 100%;">
+          <!-- Badges rendered dynamically in JS -->
+        </div>
+      </div>
+
+      <!-- CHARTS CONTAINER -->
+      <div class="charts-grid">
+        <div class="chart-card">
+          <h3>Etapas del Pipeline</h3>
+          <div id="pipeline-bar-chart" class="bar-chart-container">
+            <!-- Rendered horizontally with pure CSS in JS -->
+          </div>
+        </div>
+        <div class="chart-card">
+          <h3>Distribución por Curso</h3>
+          <div class="donut-chart-container">
+            <div class="donut-chart-wrapper">
+              <svg viewBox="0 0 100 100" class="donut-chart" id="donut-svg">
+                <!-- Slices rendered dynamically -->
+              </svg>
+              <div class="donut-center-text">
+                <div class="donut-total-val" id="donut-center-value">0</div>
+                <div class="donut-total-lbl">Alumnos</div>
+              </div>
+            </div>
+            <div class="donut-legend" id="donut-legend-container">
+              <!-- Legend rendered dynamically -->
+            </div>
+          </div>
+        </div>
+        <div class="chart-card">
+          <h3>Motivos de Pérdida</h3>
+          <div id="lost-reasons-bar-chart" class="bar-chart-container">
+            <!-- Rendered dynamically in JS -->
+          </div>
+        </div>
+        <div class="chart-card">
+          <h3>Rendimiento por Canal (Conversión %)</h3>
+          <div id="channel-performance-chart" class="bar-chart-container">
+            <!-- Rendered dynamically in JS -->
+          </div>
+        </div>
+      </div>
+
+      <!-- OPERATIONAL CONTROL CONTAINER -->
+      <div class="charts-grid"
+        style="grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px; margin-bottom: 24px;">
+        <!-- OPTION A: SEMÁFORO DE INERCIA COMERCIAL -->
+        <div class="chart-card">
+          <h3>Inercia Comercial (Días sin Contacto)</h3>
+          <div id="stagnation-heatmap-container"
+            style="display: flex; flex-direction: column; gap: 14px; padding-top: 10px;">
+            <!-- Rendered dynamically in JS -->
+          </div>
+        </div>
+
+        <!-- OPTION B: MONITOR DE OCUPACIÓN DE COHORTES -->
+        <div class="chart-card">
+          <h3>Ocupación de Cohortes Activas</h3>
+          <div id="cohort-fill-rate-container"
+            style="display: flex; flex-direction: column; gap: 14px; padding-top: 10px;">
+            <!-- Rendered dynamically in JS -->
+          </div>
+        </div>
+
+        <!-- OPTION C: PANEL DE CONTINUIDAD Y RE-INSCRIPCIONES -->
+        <div class="chart-card">
+          <h3>Retención y Continuidad (Próximos a Graduarse)</h3>
+          <div id="continuity-funnel-container"
+            style="display: flex; flex-direction: column; gap: 14px; padding-top: 10px;">
+            <!-- Rendered dynamically in JS -->
+          </div>
+        </div>
+      </div>
+
+      <!-- ACTIVITY FEED -->
+      <div class="activity-card">
+        <div class="activity-header" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <h3>Actividad Reciente</h3>
+            <span class="badge-count" id="activity-count">0</span>
+          </div>
+          <button class="btn btn-ghost btn-sm" onclick="openAuditModal()" style="display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; font-size: 11px; font-weight: 600; border: 1px solid var(--color-border); border-radius: var(--border-radius-sm); background: transparent; cursor: pointer; transition: all 0.2s; color: var(--color-text-muted);">
+            <i data-lucide="shield-check" style="width: 14px; height: 14px;"></i> Logs de Auditoría
+          </button>
+        </div>
+        <div id="activity-feed" class="activity-feed-container">
+          <!-- Activity feed list -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ALUMNOS TABLE VIEW -->
+    <section id="view-alumnos" class="view-section" style="display:none;">
+      <!-- SMART SEGMENTS / LISTAS INTELIGENTES -->
+      <div class="smart-segments-bar"
+        style="display: flex; gap: 8px; margin-bottom: 16px; overflow-x: auto; padding-bottom: 8px; border-bottom: 1px solid var(--color-border);">
+        <button class="segment-btn active" id="segment-todos" onclick="setSmartSegment('todos')">📂 Todos</button>
+        <button class="segment-btn" id="segment-agenda" onclick="setSmartSegment('agenda')">📅 Agenda (Hoy)</button>
+        <button class="segment-btn" id="segment-abandonados" onclick="setSmartSegment('abandonados')">❄️ Leads
+          Fríos</button>
+        <button class="segment-btn" id="segment-alta" onclick="setSmartSegment('alta_prioridad')">🔥 Alta
+          Prioridad</button>
+        <button class="segment-btn" id="segment-whatsapp" onclick="setSmartSegment('whatsapp')">💬 Listos para
+          WhatsApp</button>
+        <button class="segment-btn" id="segment-tareas" onclick="setSmartSegment('tareas')">⏰ Con Tareas</button>
+        <button class="segment-btn" id="segment-deuda" onclick="setSmartSegment('deuda')">💸 Con Saldo
+          Pendiente</button>
+        <button class="segment-btn" id="segment-riesgo" onclick="setSmartSegment('riesgo_cobro')">⚠️ En Riesgo</button>
+      </div>
+
+      <div style="display: flex; gap: 20px; align-items: flex-start; margin-top: 10px;">
+        <!-- Left Filter Sidebar -->
+        <div id="alumnos-filter-sidebar" class="chart-card"
+          style="width: 250px; flex-shrink: 0; padding: 18px; display: flex; flex-direction: column; gap: 14px; background: var(--color-surface); border-radius: var(--border-radius-md); box-shadow: var(--shadow-sm); border: 1px solid var(--color-border); margin: 0; height: fit-content;">
+          <div
+            style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--color-border); padding-bottom: 10px; margin-bottom: 4px;">
+            <h4
+              style="margin: 0; font-size: 13px; font-weight: 700; color: var(--color-text); display: flex; align-items: center; gap: 6px; text-transform: uppercase; letter-spacing: 0.5px;">
+              <i data-lucide="sliders-horizontal" style="width: 14px; height: 14px; color: var(--color-primary);"></i>
+              Filtros de Alumnos
+            </h4>
+            <button class="btn btn-ghost btn-icon-sm" onclick="clearFilters()" title="Limpiar todos los filtros"
+              style="padding: 4px; border-radius: 4px; height: auto; width: auto;">
+              <i data-lucide="rotate-ccw" style="width: 13px; height: 13px;"></i>
+            </button>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 0;">
+            <label
+              style="font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--color-text-muted); margin-bottom: 4px; display: block;">Etapa
+              del Proceso</label>
+            <select id="filter-etapa" onchange="filterAlumnos()"
+              style="width: 100%; padding: 8px 10px; font-size: 13px; background: var(--color-bg); border: 1px solid var(--color-border); color: var(--color-text); border-radius: var(--border-radius-sm);">
+              <option value="">Todas las etapas</option>
+              <option value="Nuevo">Nuevo</option>
+              <option value="Contactado">Contactado</option>
+              <option value="Interesado">Interesado</option>
+              <option value="Negociando">Negociando</option>
+              <option value="Inscrito">Inscrito</option>
+              <option value="Perdido">Perdido</option>
+            </select>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 0;">
+            <label
+              style="font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--color-text-muted); margin-bottom: 4px; display: block;">Curso
+              de Interés</label>
+            <select id="filter-curso" onchange="filterAlumnos()"
+              style="width: 100%; padding: 8px 10px; font-size: 13px; background: var(--color-bg); border: 1px solid var(--color-border); color: var(--color-text); border-radius: var(--border-radius-sm);">
+              <!-- Populated dynamically -->
+            </select>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 0;">
+            <label
+              style="font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--color-text-muted); margin-bottom: 4px; display: block;">Grupo
+              / Cohorte</label>
+            <select id="filter-cohort" onchange="filterAlumnos()"
+              style="width: 100%; padding: 8px 10px; font-size: 13px; background: var(--color-bg); border: 1px solid var(--color-border); color: var(--color-text); border-radius: var(--border-radius-sm);">
+              <!-- Populated dynamically -->
+            </select>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 0;">
+            <label
+              style="font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--color-text-muted); margin-bottom: 4px; display: block;">Prioridad</label>
+            <select id="filter-prioridad" onchange="filterAlumnos()"
+              style="width: 100%; padding: 8px 10px; font-size: 13px; background: var(--color-bg); border: 1px solid var(--color-border); color: var(--color-text); border-radius: var(--border-radius-sm);">
+              <option value="">Todas las prioridades</option>
+              <option value="Alta">Alta</option>
+              <option value="Media">Media</option>
+              <option value="Baja">Baja</option>
+            </select>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 0;">
+            <label
+              style="font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--color-text-muted); margin-bottom: 4px; display: block;">Origen
+              del Prospecto</label>
+            <select id="filter-origen" onchange="filterAlumnos()"
+              style="width: 100%; padding: 8px 10px; font-size: 13px; background: var(--color-bg); border: 1px solid var(--color-border); color: var(--color-text); border-radius: var(--border-radius-sm);">
+              <option value="">Todos los orígenes</option>
+              <option value="Instagram">Instagram</option>
+              <option value="WhatsApp">WhatsApp</option>
+              <option value="TikTok">TikTok</option>
+              <option value="Web">Web</option>
+              <option value="Referido">Referido</option>
+              <option value="Presencial">Presencial</option>
+              <option value="Facebook">Facebook</option>
+            </select>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 0;">
+            <label
+              style="font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--color-text-muted); margin-bottom: 4px; display: block;">Estado
+              de Pago</label>
+            <select id="filter-pago" onchange="filterAlumnos()"
+              style="width: 100%; padding: 8px 10px; font-size: 13px; background: var(--color-bg); border: 1px solid var(--color-border); color: var(--color-text); border-radius: var(--border-radius-sm);">
+              <option value="">Todos los Estados de Pago</option>
+              <option value="completado">Completado 🟢</option>
+              <option value="parcial">Abono Parcial 🟡</option>
+              <option value="pendiente">Pendiente 🔴</option>
+            </select>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 0;">
+            <label
+              style="font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--color-text-muted); margin-bottom: 4px; display: block;">Estado
+              Académico</label>
+            <select id="filter-academic-status" onchange="filterAlumnos()"
+              style="width: 100%; padding: 8px 10px; font-size: 13px; background: var(--color-bg); border: 1px solid var(--color-border); color: var(--color-text); border-radius: var(--border-radius-sm);">
+              <option value="">Todos los Estados</option>
+              <option value="Cursando">Cursando 📖</option>
+              <option value="Graduado">Graduado 🎓</option>
+              <option value="Retirado">Retirado ❌</option>
+              <option value="Prospecto">Prospecto (Sin Inscribir)</option>
+            </select>
+          </div>
+
+          <div class="form-group"
+            style="margin-bottom: 0; border-top: 1px solid var(--color-border); padding-top: 10px; display: flex; flex-direction: column; gap: 8px;">
+            <label
+              style="font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--color-text-muted); margin-bottom: 0; display: block;">Guardar
+              Vista Actual</label>
+            <div style="display: flex; gap: 6px; width: 100%;">
+              <input type="text" id="save-filter-name" placeholder="Nombre de vista..."
+                style="flex-grow: 1; padding: 6px 8px; font-size: 12px; background: var(--color-bg); border: 1px solid var(--color-border); color: var(--color-text); border-radius: var(--border-radius-sm); min-width: 0;">
+              <button class="btn btn-primary" onclick="saveCustomFilterView()"
+                style="padding: 6px 10px; font-size: 11px; min-width: auto; height: 32px;" title="Guardar Vista"><i
+                  data-lucide="save" style="width: 14px; height: 14px;"></i></button>
+            </div>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 0;">
+            <label
+              style="font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--color-text-muted); margin-bottom: 4px; display: block;">Vistas
+              Guardadas</label>
+            <select id="saved-filters-select" onchange="loadCustomFilterView(this.value)"
+              style="width: 100%; padding: 8px 10px; font-size: 13px; background: var(--color-bg); border: 1px solid var(--color-border); color: var(--color-text); border-radius: var(--border-radius-sm);">
+              <option value="">-- Seleccionar vista --</option>
+            </select>
+          </div>
+
+          <div id="delete-filter-btn-container" style="display: none; justify-content: flex-end; width: 100%;">
+            <button class="btn btn-ghost" onclick="deleteCustomFilterView()"
+              style="color: var(--color-error); font-size: 11px; padding: 2px 6px; height: auto; min-height: 0; min-width: 0;">✕
+              Eliminar Vista</button>
+          </div>
+        </div>
+
+        <!-- Right Main Table Area -->
+        <div style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column; gap: 16px;">
+          <!-- Top Search & Actions row -->
+          <div class="search-filters-bar" style="width: 100%; display: flex; gap: 12px; align-items: center;">
+            <div class="search-input-wrapper" style="flex-grow: 1; margin: 0;">
+              <i data-lucide="search" class="search-icon"></i>
+              <input type="text" id="alumno-search" placeholder="Buscar por nombre, email o WhatsApp..."
+                oninput="filterAlumnosDebounced()">
+            </div>
+            <input type="file" id="csv-import-input" accept=".csv" style="display: none;" onchange="handleCSVFileSelect(event)">
+            <button class="btn btn-secondary btn-icon-sm" onclick="document.getElementById('csv-import-input').click()" title="Importar Prospectos desde CSV"
+              style="background: rgba(139, 92, 246, 0.12); color: #8b5cf6; border-color: rgba(139, 92, 246, 0.25); height: 38px; display: flex; align-items: center; justify-content: center; padding: 0 12px; gap: 6px; font-size: 12px; font-weight: 600;">
+              <i data-lucide="upload" style="width: 16px; height: 16px;"></i> Importar CSV
+            </button>
+            <button class="btn btn-secondary btn-icon-sm" onclick="downloadCSVTemplate()" title="Descargar Plantilla CSV"
+              style="background: rgba(247, 172, 5, 0.12); color: #f7ac05; border-color: rgba(247, 172, 5, 0.25); height: 38px; display: flex; align-items: center; justify-content: center; padding: 0 12px; gap: 6px; font-size: 12px; font-weight: 600;">
+              <i data-lucide="file-spreadsheet" style="width: 16px; height: 16px;"></i> Plantilla CSV
+            </button>
+            <button class="btn btn-secondary btn-icon-sm" onclick="exportToCSV()" title="Exportar Vista Actual a CSV"
+              style="background: rgba(76, 175, 80, 0.12); color: #4caf50; border-color: rgba(76, 175, 80, 0.25); height: 38px; display: flex; align-items: center; justify-content: center; padding: 0 12px; gap: 6px; font-size: 12px; font-weight: 600;">
+              <i data-lucide="download" style="width: 16px; height: 16px;"></i> Exportar CSV
+            </button>
+            <button class="btn btn-secondary btn-icon-sm" onclick="exportToPDFReport()" title="Exportar Vista Actual a PDF"
+              style="background: rgba(244, 67, 54, 0.12); color: #f44336; border-color: rgba(244, 67, 54, 0.25); height: 38px; display: flex; align-items: center; justify-content: center; padding: 0 12px; gap: 6px; font-size: 12px; font-weight: 600;">
+              <i data-lucide="file-text" style="width: 16px; height: 16px;"></i> Exportar PDF
+            </button>
+          </div>
+
+          <!-- Resumen Financiero Dinámico (Recommendation 2) -->
+          <div id="alumnos-summary-banner" style="display: flex; gap: 15px; margin-bottom: 5px; background: var(--color-surface); border: 1.5px solid var(--color-border); border-radius: var(--border-radius-lg); padding: 16px 20px; box-shadow: var(--shadow-sm); flex-wrap: wrap; width: 100%;">
+            <div style="flex: 1; min-width: 120px;">
+              <span style="font-size: 11px; text-transform: uppercase; color: var(--color-text-muted); font-weight: 600; display: block; margin-bottom: 2px;">Alumnos Visibles</span>
+              <strong id="summary-filtered-count" style="font-size: 18px; color: var(--color-primary); font-family: var(--font-display);">0</strong>
+            </div>
+            <div style="flex: 1; min-width: 120px; border-left: 1px solid var(--color-border); padding-left: 15px;">
+              <span style="font-size: 11px; text-transform: uppercase; color: var(--color-text-muted); font-weight: 600; display: block; margin-bottom: 2px;">Deuda Acumulada</span>
+              <strong id="summary-filtered-debt" style="font-size: 18px; color: var(--color-error); font-family: var(--font-display);">$0 USD</strong>
+            </div>
+            <div style="flex: 1; min-width: 120px; border-left: 1px solid var(--color-border); padding-left: 15px;">
+              <span style="font-size: 11px; text-transform: uppercase; color: var(--color-text-muted); font-weight: 600; display: block; margin-bottom: 2px;">Equivalente VES</span>
+              <strong id="summary-filtered-debt-ves" style="font-size: 18px; color: var(--color-text); font-family: var(--font-display);">0.00 VES</strong>
+            </div>
+            <div style="flex: 1; min-width: 120px; border-left: 1px solid var(--color-border); padding-left: 15px;">
+              <span style="font-size: 11px; text-transform: uppercase; color: var(--color-text-muted); font-weight: 600; display: block; margin-bottom: 2px;">Tasa de Solvencia</span>
+              <strong id="summary-filtered-solvency" style="font-size: 18px; color: var(--color-success); font-family: var(--font-display);">100%</strong>
+            </div>
+          </div>
+
+          <!-- Table card -->
+          <div class="table-card" style="margin: 0;">
+            <div class="table-responsive">
+              <table class="students-table">
+                <thead>
+                  <tr>
+                    <th style="width: 40px; text-align: center; pointer-events: none;"><input type="checkbox" id="bulk-select-all" onclick="toggleSelectAllAlumnos(this); event.stopPropagation();" style="cursor: pointer; width: 16px; height: 16px; accent-color: var(--color-primary);"></th>
+                    <th onclick="handleSort('nombre')">Nombre <span id="sort-icon-nombre" class="sort-icon"></span></th>
+                    <th onclick="handleSort('curso')">Curso <span id="sort-icon-curso" class="sort-icon"></span></th>
+                    <th onclick="handleSort('etapa')">Etapa <span id="sort-icon-etapa" class="sort-icon"></span></th>
+                    <th onclick="handleSort('prioridad')">Prioridad <span id="sort-icon-prioridad"
+                        class="sort-icon"></span></th>
+                    <th onclick="handleSort('score')">Score <span id="sort-icon-score" class="sort-icon"></span></th>
+                    <th onclick="handleSort('origen')">Origen <span id="sort-icon-origen" class="sort-icon"></span></th>
+                    <th onclick="handleSort('fecha')">Fecha Registro <span id="sort-icon-fecha"
+                        class="sort-icon"></span></th>
+                    <th style="text-align: right; pointer-events: none;">Acciones</th>
+                  </tr>
+                </thead>
+                <tbody id="alumnos-table-body">
+                  <!-- Rows populated dynamically -->
+                </tbody>
+              </table>
+            </div>
+            <div id="table-empty-state" class="empty-state" style="display:none;">
+              <i data-lucide="users" class="empty-icon"></i>
+              <p>No se encontraron alumnos que coincidan con los filtros aplicados.</p>
+            </div>
+            <div id="table-pagination-bar"
+              style="display: flex; align-items: center; justify-content: space-between; padding: 14px 20px; border-top: 1px solid var(--color-border); background: var(--color-surface); font-size: 13px;">
+              <span id="pagination-info" style="color: var(--color-text-muted);">Mostrando 0-0 de 0 alumnos</span>
+              <div style="display: flex; gap: 8px; align-items: center;">
+                <button class="btn btn-ghost" id="btn-prev-page" onclick="prevAlumnosPage()"
+                  style="padding: 6px 12px; font-size: 12px; display: inline-flex; align-items: center; gap: 4px; cursor: pointer;">
+                  ❮ Anterior
+                </button>
+                <span id="pagination-current-page"
+                  style="font-weight: 700; color: var(--color-primary); background: rgba(32, 38, 74, 0.05); padding: 4px 10px; border-radius: 6px;">1</span>
+                <button class="btn btn-ghost" id="btn-next-page" onclick="nextAlumnosPage()"
+                  style="padding: 6px 12px; font-size: 12px; display: inline-flex; align-items: center; gap: 4px; cursor: pointer;">
+                  Siguiente ❯
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Barra de Acciones en Lote (Recommendation 1) -->
+      <div id="bulk-actions-bar" style="display: none; position: fixed; bottom: 25px; left: 55%; transform: translateX(-50%); background: rgba(32, 38, 74, 0.96); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border: 1.5px solid rgba(255, 255, 255, 0.15); border-radius: var(--border-radius-lg); padding: 12px 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); z-index: 1000; align-items: center; gap: 20px; color: white; transition: all 0.3s ease; flex-wrap: wrap;">
+        <div>
+          <span style="font-size: 10px; text-transform: uppercase; color: rgba(255,255,255,0.6); font-weight: 600; display: block; margin-bottom: 2px;">Seleccionados</span>
+          <strong id="bulk-actions-count" style="font-size: 15px; color: #ff9800; font-family: var(--font-display);">0 alumnos</strong>
+        </div>
+        <div style="height: 30px; border-left: 1px solid rgba(255,255,255,0.2);"></div>
+        <div style="display: flex; gap: 6px; align-items: center;">
+          <select id="bulk-cohort-select" style="padding: 6px 10px; font-size: 12px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.1); color: white; cursor: pointer; height: 32px; width: 150px; outline: none;">
+            <option value="" style="color: #333;">-- Cohorte --</option>
+          </select>
+          <button class="btn btn-primary" onclick="applyBulkMoveCohort()" style="font-size: 11px; padding: 6px 12px; background-color: var(--color-primary); color: white; border-radius: 4px; height: 32px; border: none; cursor: pointer;">Asignar</button>
+        </div>
+        <div style="display: flex; gap: 6px; align-items: center;">
+          <select id="bulk-stage-select" style="padding: 6px 10px; font-size: 12px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.1); color: white; cursor: pointer; height: 32px; outline: none;">
+            <option value="" style="color: #333;">-- Etapa --</option>
+            <option value="Nuevo" style="color: #333;">Nuevo</option>
+            <option value="Contactado" style="color: #333;">Contactado</option>
+            <option value="Interesado" style="color: #333;">Interesado</option>
+            <option value="Negociando" style="color: #333;">Negociando</option>
+            <option value="Inscrito" style="color: #333;">Inscrito</option>
+            <option value="Perdido" style="color: #333;">Perdido</option>
+          </select>
+          <button class="btn btn-primary" onclick="applyBulkChangeStage()" style="font-size: 11px; padding: 6px 12px; background-color: var(--color-primary); color: white; border-radius: 4px; height: 32px; border: none; cursor: pointer;">Cambiar</button>
+        </div>
+        <button onclick="applyBulkDelete()" style="font-size: 11px; padding: 6px 12px; background-color: var(--color-error); color: white; border-radius: 4px; border: none; display: flex; align-items: center; gap: 4px; cursor: pointer; height: 32px; font-weight: 600;">
+          <i data-lucide="trash-2" style="width: 12px; height: 12px;"></i> Eliminar
+        </button>
+      </div>
+    </section>
+
+    <!-- FINANZAS (TRANSACTIONS) VIEW -->
+    <section id="view-finanzas" class="view-section" style="display:none;">
+      <!-- KPI CARDS FOR FINANCE -->
+      <div class="metrics-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 20px;">
+        <div class="kpi-card card-finance-total" style="background: var(--color-surface); padding: 20px; border-radius: var(--border-radius-lg); box-shadow: var(--shadow-sm); border: 1.5px solid var(--color-border); display: flex; align-items: center; gap: 16px;">
+          <div style="background: rgba(109, 170, 69, 0.12); color: #6daa45; width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px;">
+            <i data-lucide="dollar-sign"></i>
+          </div>
+          <div>
+            <span style="font-size: 11px; text-transform: uppercase; color: var(--color-text-muted); font-weight: 600; display: block; margin-bottom: 4px;">Recaudación Total (USD)</span>
+            <strong id="finanzas-kpi-total-usd" style="font-size: 20px; color: var(--color-primary); font-family: var(--font-display);">$0.00 USD</strong>
+          </div>
+        </div>
+        <div class="kpi-card card-finance-ves" style="background: var(--color-surface); padding: 20px; border-radius: var(--border-radius-lg); box-shadow: var(--shadow-sm); border: 1.5px solid var(--color-border); display: flex; align-items: center; gap: 16px;">
+          <div style="background: rgba(32, 38, 74, 0.08); color: var(--color-primary); width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px;">
+            <i data-lucide="trending-up"></i>
+          </div>
+          <div>
+            <span style="font-size: 11px; text-transform: uppercase; color: var(--color-text-muted); font-weight: 600; display: block; margin-bottom: 4px;">Equivalente Estimado (VES)</span>
+            <strong id="finanzas-kpi-total-ves" style="font-size: 20px; color: var(--color-text); font-family: var(--font-display);">0.00 VES</strong>
+          </div>
+        </div>
+        <div class="kpi-card card-finance-count" style="background: var(--color-surface); padding: 20px; border-radius: var(--border-radius-lg); box-shadow: var(--shadow-sm); border: 1.5px solid var(--color-border); display: flex; align-items: center; gap: 16px;">
+          <div style="background: rgba(139, 92, 246, 0.12); color: #8b5cf6; width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px;">
+            <i data-lucide="receipt"></i>
+          </div>
+          <div>
+            <span style="font-size: 11px; text-transform: uppercase; color: var(--color-text-muted); font-weight: 600; display: block; margin-bottom: 4px;">Transacciones Totales</span>
+            <strong id="finanzas-kpi-count" style="font-size: 20px; color: var(--color-text); font-family: var(--font-display);">0 abonos</strong>
+          </div>
+        </div>
+        <!-- KPI 4: Egresos Totales -->
+        <div class="kpi-card card-finance-egresos" style="background: var(--color-surface); padding: 20px; border-radius: var(--border-radius-lg); box-shadow: var(--shadow-sm); border: 1.5px solid var(--color-border); display: flex; align-items: center; gap: 16px;">
+          <div style="background: rgba(244, 67, 54, 0.12); color: #f44336; width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px;">
+            <i data-lucide="trending-down"></i>
+          </div>
+          <div>
+            <span style="font-size: 11px; text-transform: uppercase; color: var(--color-text-muted); font-weight: 600; display: block; margin-bottom: 4px;">Egresos Totales (USD)</span>
+            <strong id="finanzas-kpi-egresos" style="font-size: 20px; color: var(--color-error); font-family: var(--font-display);">$0.00 USD</strong>
+          </div>
+        </div>
+        <!-- KPI 5: Balance Neto -->
+        <div class="kpi-card card-finance-balance" style="background: var(--color-surface); padding: 20px; border-radius: var(--border-radius-lg); box-shadow: var(--shadow-sm); border: 1.5px solid var(--color-border); display: flex; align-items: center; gap: 16px;">
+          <div style="background: rgba(79, 152, 163, 0.12); color: #4f98a3; width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px;">
+            <i data-lucide="activity"></i>
+          </div>
+          <div>
+            <span style="font-size: 11px; text-transform: uppercase; color: var(--color-text-muted); font-weight: 600; display: block; margin-bottom: 4px;">Balance Neto (USD)</span>
+            <strong id="finanzas-kpi-balance" style="font-size: 20px; color: var(--color-text); font-family: var(--font-display);">$0.00 USD</strong>
+          </div>
+        </div>
+      </div>
+
+      <!-- CASH FLOW CHART CARD -->
+      <div class="table-card" style="margin: 0 0 20px 0; padding: 20px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+          <h4 style="font-size: 14px; font-weight: 700; color: var(--color-text); margin: 0; display: flex; align-items: center; gap: 6px;">
+            <i data-lucide="bar-chart-3" style="width: 18px; height: 18px; color: var(--color-primary);"></i> Análisis de Flujo de Caja (Ingresos vs Egresos)
+          </h4>
+        </div>
+        <div style="position: relative; height: 220px; width: 100%;">
+          <canvas id="finanzas-cashflow-chart"></canvas>
+        </div>
+      </div>
+
+      <!-- FILTERS BAR -->
+      <div class="search-filters-bar" style="display: flex; gap: 10px; margin-bottom: 16px; align-items: center; flex-wrap: wrap;">
+        <div class="search-input-wrapper" style="flex-grow: 1; max-width: 300px; margin-bottom: 0;">
+          <i data-lucide="search" class="search-icon"></i>
+          <input type="text" id="finanzas-search" placeholder="Buscar por alumno o referencia..." oninput="renderFinanzas()" style="width: 100%;">
+        </div>
+        <select id="finanzas-filter-method" onchange="renderFinanzas()"
+          style="padding: 8px 12px; background: var(--color-surface); border: 1px solid var(--color-border); color: var(--color-text); border-radius: var(--border-radius-sm); font-size: 13px; outline: none; cursor: pointer;">
+          <option value="">Todos los métodos</option>
+          <option value="Pago Móvil">Pago Móvil</option>
+          <option value="Zelle">Zelle</option>
+          <option value="Efectivo">Efectivo</option>
+          <option value="Paypal">Paypal</option>
+          <option value="Transferencia">Transferencia</option>
+        </select>
+        <select id="finanzas-filter-month" onchange="renderFinanzas()"
+          style="padding: 8px 12px; background: var(--color-surface); border: 1px solid var(--color-border); color: var(--color-text); border-radius: var(--border-radius-sm); font-size: 13px; outline: none; cursor: pointer;">
+          <option value="">Cualquier fecha</option>
+          <option value="this-month">Este mes</option>
+          <option value="last-30">Últimos 30 días</option>
+        </select>
+        <button class="btn btn-secondary btn-icon-sm" onclick="exportFinanzasToCSV()" title="Exportar Transacciones a CSV"
+          style="background: rgba(76, 175, 80, 0.12); color: #4caf50; border-color: rgba(76, 175, 80, 0.25); height: 38px; width: 38px; display: flex; align-items: center; justify-content: center; padding: 0;">
+          <i data-lucide="download" style="width: 16px; height: 16px;"></i>
+        </button>
+      </div>
+
+      <!-- TRANSACTIONS TABLE -->
+      <div class="table-card" style="margin: 0;">
+        <div class="table-responsive">
+          <table class="students-table">
+            <thead>
+              <tr>
+                <th>Fecha</th>
+                <th>Alumno</th>
+                <th>Curso / Cohorte</th>
+                <th>Método de Pago</th>
+                <th>Referencia / Nota</th>
+                <th style="text-align: right;">Monto USD</th>
+                <th style="text-align: right;">Monto VES</th>
+                <th style="text-align: right;">Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="finanzas-table-body">
+              <!-- Rendered dynamically -->
+            </tbody>
+          </table>
+        </div>
+        <div id="finanzas-empty-state" class="empty-state" style="display:none; padding: 40px; text-align: center; flex-direction: column; align-items: center; justify-content: center;">
+          <i data-lucide="dollar-sign" style="width: 48px; height: 48px; color: var(--color-text-muted); margin-bottom: 12px;"></i>
+          <p style="color: var(--color-text-muted); font-size: 14px; font-weight: 500;">No se encontraron transacciones registradas.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- PIPELINE (KANBAN) VIEW -->
+    <section id="view-pipeline" class="view-section" style="display:none;">
+      <!-- PIPELINE FILTERS -->
+      <div class="pipeline-filters-bar"
+        style="display: flex; gap: 8px; margin-bottom: 16px; align-items: center; flex-wrap: wrap;">
+        <div class="search-input-wrapper" style="flex-grow: 1; max-width: 300px; margin-bottom: 0;">
+          <i data-lucide="search" class="search-icon"></i>
+          <input type="text" id="pipeline-search" placeholder="Buscar en el embudo..." oninput="renderPipeline()"
+            style="width: 100%;">
+        </div>
+        <select id="pipeline-filter-curso" onchange="renderPipeline()"
+          style="padding: 8px 12px; background: var(--color-surface); border: 1px solid var(--color-border); color: var(--color-text); border-radius: var(--border-radius-sm); font-size: 13px;">
+          <!-- Populated dynamically -->
+        </select>
+        <select id="pipeline-filter-prioridad" onchange="renderPipeline()"
+          style="padding: 8px 12px; background: var(--color-surface); border: 1px solid var(--color-border); color: var(--color-text); border-radius: var(--border-radius-sm); font-size: 13px;">
+          <option value="">Todas las prioridades</option>
+          <option value="Alta">Alta</option>
+          <option value="Media">Media</option>
+          <option value="Baja">Baja</option>
+        </select>
+        <label
+          style="display: inline-flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 500; cursor: pointer; color: var(--color-text-muted);">
+          <input type="checkbox" id="pipeline-hide-archived" checked onchange="renderPipeline()"
+            style="cursor:pointer; width:16px; height:16px; accent-color: var(--color-primary);">
+          Ocultar inscritos/perdidos antiguos (>15 días)
+        </label>
+      </div>
+
+      <div class="kanban-board" id="kanban-board-container">
+        <!-- Rendered dynamically -->
+      </div>
+    </section>
+
+    <!-- MIS CURSOS VIEW -->
+    <section id="view-cursos" class="view-section" style="display:none;">
+      <div class="courses-header-row">
+        <p class="section-desc">Administra el portafolio formativo de Academia CTD. No podrás eliminar cursos que tengan
+          alumnos asignados.</p>
+        <button class="btn btn-primary" onclick="openCourseModal()">
+          <i data-lucide="plus"></i> <span>Agregar Curso</span>
+        </button>
+      </div>
+      <div class="courses-grid" id="courses-grid-container">
+        <!-- Course cards rendered dynamically -->
+      </div>
+    </section>
+
+    <!-- GRUPOS / COHORTES VIEW -->
+    <section id="view-cohortes" class="view-section" style="display:none;">
+      <div class="courses-header-row"
+        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; width: 100%;">
+        <p class="section-desc" style="margin: 0; color: var(--color-text-muted);">Gestiona los salones, grupos y
+          cohortes de estudio. Asigna alumnos directamente y controla su ciclo de vida.</p>
+        <button class="btn btn-primary" onclick="openCohortModal()">
+          <i data-lucide="plus"></i> <span>Crear Cohorte / Grupo</span>
+        </button>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 340px; gap: 24px; width: 100%;">
+        <!-- Cohorts List/Cards Grid -->
+        <div style="display: flex; flex-direction: column; gap: 16px;">
+          <div class="courses-grid" id="cohorts-grid-container"
+            style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; width: 100%;">
+            <!-- Cohort cards rendered dynamically -->
+          </div>
+        </div>
+
+        <!-- Sidebar Panel for selected Cohort details (Assigned Students) -->
+        <div class="chart-card" id="cohort-students-sidebar" style="height: fit-content; display: none;">
+          <div
+            style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; padding-bottom:10px; border-bottom:1px solid var(--color-border);">
+            <h3 id="cohort-sidebar-title" style="margin:0; font-size:15px; font-weight:700;">Alumnos del Grupo</h3>
+            <div style="display:flex; align-items:center; gap:8px;">
+              <button class="btn btn-ghost btn-icon-sm" onclick="exportCohortToCSV()" title="Exportar Grupo a CSV"
+                style="padding:2px; height:auto; width:auto; color: var(--color-success); border: none; background: transparent; cursor: pointer;">
+                <i data-lucide="download" style="width:16px; height:16px;"></i>
+              </button>
+              <button class="btn btn-ghost btn-icon-sm" onclick="closeCohortSidebar()"
+                style="padding:2px; height:auto; width:auto; border: none; background: transparent; cursor: pointer; color: var(--color-text);"><i
+                  data-lucide="x" style="width:16px; height:16px;"></i></button>
+            </div>
+          </div>
+
+          <div style="margin-bottom:16px;">
+            <p
+              style="font-size:11px; text-transform:uppercase; color:var(--color-text-muted); font-weight:700; margin-bottom:8px;">
+              Alumnos Asignados</p>
+            <div id="cohort-assigned-students-list"
+              style="display:flex; flex-direction:column; gap:6px; max-height:200px; overflow-y:auto; padding-right:4px;">
+              <!-- Assigned students -->
+            </div>
+          </div>
+
+          <div>
+            <p
+              style="font-size:11px; text-transform:uppercase; color:var(--color-text-muted); font-weight:700; margin-bottom:8px;">
+              Agregar Alumnos de este Curso</p>
+            <div id="cohort-unassigned-students-list"
+              style="display:flex; flex-direction:column; gap:6px; max-height:220px; overflow-y:auto; padding-right:4px;">
+              <!-- Students that can be added -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAREAS VIEW -->
+    <section id="view-tareas" class="view-section" style="display:none;">
+      <div class="view-header-row">
+        <p class="section-desc">Gestiona tus tareas de seguimiento pendientes para todos los prospectos de la academia.
+        </p>
+      </div>
+      <div class="tareas-container" style="display: grid; grid-template-columns: 1fr 300px; gap: 24px; width: 100%;">
+        <div class="table-card" style="align-self: flex-start;">
+          <div class="table-responsive">
+            <table class="students-table">
+              <thead>
+                <tr>
+                  <th>Estado</th>
+                  <th>Tarea</th>
+                  <th>Alumno</th>
+                  <th>Fecha Límite</th>
+                  <th style="text-align: right;">Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="global-tareas-tbody">
+                <!-- Rendered dynamically -->
+              </tbody>
+            </table>
+          </div>
+          <div id="tareas-empty-state" class="empty-state" style="display:none;">
+            <i data-lucide="check-square" class="empty-icon"></i>
+            <p>¡Buen trabajo! No tienes tareas pendientes.</p>
+          </div>
+        </div>
+
+        <!-- Add Quick Task Sidebar/Card -->
+        <div class="chart-card" style="height: fit-content;">
+          <h3 style="margin-bottom: 16px;">Nueva Tarea</h3>
+          <form id="global-task-form" onsubmit="saveGlobalTask(event)">
+            <div class="form-group" style="margin-bottom: 12px;">
+              <label for="global-task-desc">Descripción *</label>
+              <input type="text" id="global-task-desc" required placeholder="Ej. Confirmar transferencia...">
+            </div>
+            <div class="form-group" style="margin-bottom: 12px;">
+              <label for="global-task-student">Asociar a Alumno (Opcional)</label>
+              <select id="global-task-student">
+                <!-- Filled in JS -->
+              </select>
+            </div>
+            <div class="form-group" style="margin-bottom: 16px;">
+              <label for="global-task-date">Fecha Límite</label>
+              <input type="date" id="global-task-date">
+            </div>
+            <button type="submit" class="btn btn-primary btn-full">Crear Tarea</button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- CALENDARIO DE PAGOS VIEW -->
+    <section id="view-calendario" class="view-section" style="display:none; flex-direction: column; gap: 20px;">
+      <div class="view-header-row"
+        style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+        <p class="section-desc" style="margin: 0;">Planifica y realiza el seguimiento de vencimientos de abonos mensuales.</p>
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <button class="btn btn-ghost" onclick="resetCalendarToToday()"
+            style="padding: 6px 12px; font-size: 13px; font-weight: 600; cursor: pointer; border: 1px solid var(--color-border); border-radius: var(--border-radius-sm);">Hoy</button>
+          <button class="btn btn-ghost" onclick="prevCalendarMonth()"
+            style="padding: 6px 12px; font-size: 13px; cursor: pointer; border: 1px solid var(--color-border); border-radius: var(--border-radius-sm);"><i
+              data-lucide="chevron-left" style="width:16px; height:16px; vertical-align: middle;"></i></button>
+          <h3 id="calendar-month-year"
+            style="margin: 0; font-size: 16px; font-weight: 700; min-width: 140px; text-align: center; color: var(--color-text);">
+            Junio 2026</h3>
+          <button class="btn btn-ghost" onclick="nextCalendarMonth()"
+            style="padding: 6px 12px; font-size: 13px; cursor: pointer; border: 1px solid var(--color-border); border-radius: var(--border-radius-sm);"><i
+              data-lucide="chevron-right" style="width:16px; height:16px; vertical-align: middle;"></i></button>
+        </div>
+      </div>
+
+      <!-- Filters & Legend (Recommendation 2) -->
+      <div style="display: flex; align-items: center; gap: 20px; font-size: 13px; color: var(--color-text); margin-bottom: -10px;">
+        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-weight: 500;">
+          <input type="checkbox" id="calendar-show-payments" checked onchange="renderCalendar()" style="cursor: pointer; width: 15px; height: 15px;">
+          <span style="display: inline-block; width: 12px; height: 12px; background: rgba(253, 171, 67, 0.2); border: 1px solid #fdab43; border-radius: 3px;"></span>
+          Cobranzas
+        </label>
+        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-weight: 500;">
+          <input type="checkbox" id="calendar-show-tasks" checked onchange="renderCalendar()" style="cursor: pointer; width: 15px; height: 15px;">
+          <span style="display: inline-block; width: 12px; height: 12px; background: rgba(139, 92, 246, 0.2); border: 1px solid #a78bfa; border-radius: 3px;"></span>
+          Tareas
+        </label>
+      </div>
+
+      <!-- Main Layout: Grid Calendar + Sidebar Agenda (Recommendation 1) -->
+      <div style="display: grid; grid-template-columns: 1fr 340px; gap: 20px; width: 100%;">
+        
+        <!-- Calendar Grid Card -->
+        <div class="table-card"
+          style="padding: 20px; border-radius: var(--border-radius-lg); background: var(--color-surface); border: 1px solid var(--color-border); box-shadow: var(--shadow-sm); width: 100%; box-sizing: border-box;">
+          <!-- Calendar Grid Headers -->
+          <div class="calendar-headers-grid"
+            style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; text-align: center; font-weight: 600; font-size: 12px; text-transform: uppercase; color: var(--color-text-muted); margin-bottom: 12px; border-bottom: 1px solid var(--color-border); padding-bottom: 8px;">
+            <div>Dom</div>
+            <div>Lun</div>
+            <div>Mar</div>
+            <div>Mie</div>
+            <div>Jue</div>
+            <div>Vie</div>
+            <div>Sab</div>
+          </div>
+          <div id="calendar-grid" class="calendar-days-grid"
+            style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; min-height: 420px; width: 100%;">
+            <!-- Days populated dynamically -->
+          </div>
+        </div>
+
+        <!-- Sidebar Agenda Card (Recommendation 1) -->
+        <div class="chart-card" id="calendar-agenda-sidebar" style="height: fit-content; display: flex; flex-direction: column; gap: 16px; padding: 20px; box-sizing: border-box; background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--border-radius-lg); box-shadow: var(--shadow-sm);">
+          <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--color-border); padding-bottom: 10px;">
+            <h3 id="calendar-agenda-title" style="margin: 0; font-size: 15px; font-weight: 700; color: var(--color-text);">Agenda del Día</h3>
+            <span id="calendar-agenda-date-badge" style="font-size: 11px; font-weight: 600; color: var(--color-primary); background: rgba(79, 152, 163, 0.1); padding: 4px 8px; border-radius: 4px;">Selecciona un día</span>
+          </div>
+          <div id="calendar-agenda-events-list" style="display: flex; flex-direction: column; gap: 10px; max-height: 400px; overflow-y: auto;">
+            <!-- Agenda list rendered dynamically -->
+            <p style="font-size: 12px; color: var(--color-text-muted); text-align: center; padding: 20px 0; margin: 0;">Haz clic en cualquier día del calendario para ver sus cobros y tareas pendientes.</p>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- REPORTES VIEW -->
+    <section id="view-reportes" class="view-section" style="display:none; flex-direction: column; gap: 20px;">
+      <div class="view-header-row" style="margin: 0; padding: 0;">
+        <p class="section-desc">Métricas de rendimiento, conversión e ingresos reales de Academia CTD.</p>
+      </div>
+
+      <!-- Tabs Navigation -->
+      <div class="smart-segments-bar"
+        style="display: flex; gap: 8px; margin-bottom: 8px; overflow-x: auto; padding-bottom: 8px; border-bottom: 1px solid var(--color-border); width: 100%;">
+        <button class="segment-btn active" id="rep-tab-comercial-btn" onclick="switchReportesTab('comercial')">📈
+          Inteligencia Comercial</button>
+        <button class="segment-btn" id="rep-tab-financiero-btn" onclick="switchReportesTab('financiero')">💼 Control
+          Financiero (Egresos)</button>
+        <button class="segment-btn" id="rep-tab-embudo-btn" onclick="switchReportesTab('embudo')">📊 Tasa de Traspaso
+          (Embudo)</button>
+      </div>
+
+      <!-- Stats Summary cards -->
+      <div class="kpis-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); width: 100%;">
+        <div class="kpi-card">
+          <div class="kpi-icon-wrapper" style="background: rgba(109, 170, 69, 0.15); color: #6daa45;">
+            <i data-lucide="dollar-sign"></i>
+          </div>
+          <div class="kpi-info">
+            <span class="kpi-title">Ingresos Proyectados</span>
+            <span class="kpi-value" id="rep-ingresos-totales">$0</span>
+            <span class="kpi-subtext">De alumnos inscritos</span>
+          </div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-icon-wrapper" style="background: rgba(76, 175, 80, 0.15); color: #4caf50;">
+            <i data-lucide="wallet"></i>
+          </div>
+          <div class="kpi-info">
+            <span class="kpi-title">Ingresos Recaudados</span>
+            <span class="kpi-value" id="rep-ingresos-recaudados">$0</span>
+            <span class="kpi-subtext">Montos abonados reales</span>
+          </div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-icon-wrapper" style="background: rgba(244, 67, 54, 0.15); color: var(--color-error);">
+            <i data-lucide="trending-down"></i>
+          </div>
+          <div class="kpi-info">
+            <span class="kpi-title">Egresos Registrados</span>
+            <span class="kpi-value" id="rep-egresos-totales">$0</span>
+            <span class="kpi-subtext">Gastos operativos</span>
+          </div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-icon-wrapper" style="background: rgba(33, 150, 243, 0.15); color: #2196f3;">
+            <i data-lucide="line-chart"></i>
+          </div>
+          <div class="kpi-info">
+            <span class="kpi-title">Rentabilidad Neta</span>
+            <span class="kpi-value" id="rep-rentabilidad-neta">$0</span>
+            <span class="kpi-subtext" id="rep-rentabilidad-margen">Margen neto: 0%</span>
+          </div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-icon-wrapper" style="background: rgba(79, 152, 163, 0.15); color: #4f98a3;">
+            <i data-lucide="trending-up"></i>
+          </div>
+          <div class="kpi-info">
+            <span class="kpi-title">Tasa de Conversión</span>
+            <span class="kpi-value" id="rep-tasa-conversion">0%</span>
+            <span class="kpi-subtext">Total inscritos / leads</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 1: COMERCIAL CONTENT -->
+      <div id="rep-tab-comercial-content" style="display: flex; flex-direction: column; gap: 20px; width: 100%;">
+        <!-- Line Chart for Revenue Trend -->
+        <div style="width: 100%;">
+          <div class="chart-card" style="width: 100%;">
+            <h3>Tendencia de Recaudación Acumulada vs Meta Comercial</h3>
+            <div style="position: relative; height: 280px; width: 100%;">
+              <canvas id="chart-revenue-trend"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- METAS COMERCIALES DEL MES -->
+        <div class="chart-card" style="width: 100%; padding: 20px;">
+          <h3
+            style="font-size: 15px; font-weight: 700; color: var(--color-text); display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+            🎯 Objetivos y Metas Comerciales
+          </h3>
+          <p class="section-desc" style="margin-bottom: 16px;">Define las metas de inscripciones y recaudación para el
+            mes y visualiza el progreso del equipo.</p>
+
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
+            <!-- Controles de Metas -->
+            <div
+              style="display: flex; flex-direction: column; gap: 12px; background: rgba(255, 255, 255, 0.02); padding: 16px; border-radius: var(--border-radius-md); border: 1px solid var(--color-border);">
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                <div class="form-group" style="margin: 0;">
+                  <label style="font-size: 11px; font-weight: 600; margin-bottom: 4px; display: block;">Meta Inscritos
+                    (Alumnos)</label>
+                  <input type="number" id="input-meta-inscritos" value="10" min="1"
+                    style="width:100%; padding: 8px; background:var(--color-bg); border: 1px solid var(--color-border); border-radius: var(--border-radius-sm); color: var(--color-text);">
+                </div>
+                <div class="form-group" style="margin: 0;">
+                  <label style="font-size: 11px; font-weight: 600; margin-bottom: 4px; display: block;">Meta Recaudación
+                    (USD)</label>
+                  <input type="number" id="input-meta-recaudacion" value="2000" min="100" step="100"
+                    style="width:100%; padding: 8px; background:var(--color-bg); border: 1px solid var(--color-border); border-radius: var(--border-radius-sm); color: var(--color-text);">
+                </div>
+              </div>
+              <button onclick="saveMonthlyGoals()" class="btn btn-primary btn-full" style="padding: 8px;">Actualizar
+                Metas</button>
+            </div>
+
+            <!-- Barra de Progreso de Metas -->
+            <div style="display: flex; flex-direction: column; justify-content: center; gap: 16px;">
+              <!-- Progreso Inscritos -->
+              <div style="display: flex; flex-direction: column; gap: 6px;">
+                <div style="display: flex; justify-content: space-between; font-size: 12px; font-weight: 600;">
+                  <span>Progreso de Inscripciones</span>
+                  <span id="goal-progress-inscritos-text">0 / 0 (0%)</span>
+                </div>
+                <div
+                  style="height: 12px; width: 100%; background: rgba(255, 255, 255, 0.05); border-radius: 6px; overflow: hidden; border: 1px solid var(--color-border);">
+                  <div id="goal-progress-inscritos-bar"
+                    style="height: 100%; background: var(--color-primary); width: 0%; transition: width 0.3s ease-out;">
+                  </div>
+                </div>
+              </div>
+
+              <!-- Progreso Recaudacion -->
+              <div style="display: flex; flex-direction: column; gap: 6px;">
+                <div style="display: flex; justify-content: space-between; font-size: 12px; font-weight: 600;">
+                  <span>Progreso de Recaudación Real</span>
+                  <span id="goal-progress-recaudacion-text">$0 / $0 (0%)</span>
+                </div>
+                <div
+                  style="height: 12px; width: 100%; background: rgba(255, 255, 255, 0.05); border-radius: 6px; overflow: hidden; border: 1px solid var(--color-border);">
+                  <div id="goal-progress-recaudacion-bar"
+                    style="height: 100%; background: var(--color-success); width: 0%; transition: width 0.3s ease-out;">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SIMULADOR WHAT-IF PREDICTIVE -->
+        <div class="chart-card" style="width: 100%; padding: 20px;">
+          <h3
+            style="font-size: 15px; font-weight: 700; color: var(--color-text); display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
+            🔮 Simulador Financiero "What-If"
+          </h3>
+          <p class="section-desc" style="margin-bottom: 16px;">Modifica los parámetros comerciales para proyectar el
+            impacto en la facturación y recaudación de la academia.</p>
+
+          <div
+            style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; align-items: start;">
+            <!-- Controles del Simulador -->
+            <div
+              style="display: flex; flex-direction: column; gap: 14px; background: rgba(255, 255, 255, 0.02); padding: 16px; border-radius: var(--border-radius-md); border: 1px solid var(--color-border);">
+              <div class="form-group" style="margin: 0; width: 100%;">
+                <label for="whatif-conversion"
+                  style="font-size: 12px; font-weight: 600; margin-bottom: 6px; display: block; color: var(--color-text);">Tasa
+                  de Conversión Esperada (%)</label>
+                <div style="display: flex; align-items: center; gap: 10px; width: 100%;">
+                  <input type="range" id="whatif-conversion" min="0" max="100" value="15"
+                    style="flex-grow: 1; accent-color: var(--color-primary);" oninput="updateWhatIfSimulation()">
+                  <span id="val-whatif-conversion"
+                    style="font-family: var(--font-display); font-weight: 700; min-width: 40px; text-align: right; color: var(--color-text);">15%</span>
+                </div>
+              </div>
+
+              <div class="form-group" style="margin: 0; width: 100%;">
+                <label for="whatif-price-increase"
+                  style="font-size: 12px; font-weight: 600; margin-bottom: 6px; display: block; color: var(--color-text);">Aumento
+                  de Precio Promedio (USD)</label>
+                <div style="display: flex; align-items: center; gap: 10px; width: 100%;">
+                  <input type="range" id="whatif-price-increase" min="-100" max="200" value="0" step="5"
+                    style="flex-grow: 1; accent-color: var(--color-primary);" oninput="updateWhatIfSimulation()">
+                  <span id="val-whatif-price-increase"
+                    style="font-family: var(--font-display); font-weight: 700; min-width: 45px; text-align: right; color: var(--color-text);">+$0</span>
+                </div>
+              </div>
+
+              <div class="form-group" style="margin: 0; width: 100%;">
+                <label for="whatif-new-leads"
+                  style="font-size: 12px; font-weight: 600; margin-bottom: 6px; display: block; color: var(--color-text);">Nuevos
+                  Leads Mensuales</label>
+                <div style="display: flex; align-items: center; gap: 10px; width: 100%;">
+                  <input type="range" id="whatif-new-leads" min="0" max="200" value="50"
+                    style="flex-grow: 1; accent-color: var(--color-primary);" oninput="updateWhatIfSimulation()">
+                  <span id="val-whatif-new-leads"
+                    style="font-family: var(--font-display); font-weight: 700; min-width: 40px; text-align: right; color: var(--color-text);">50</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Resultados Proyectados -->
+            <div class="whatif-results-grid"
+              style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; height: 100%;">
+              <div class="kpi-card"
+                style="background: rgba(79, 152, 163, 0.05); border: 1px solid rgba(79, 152, 163, 0.15); padding: 12px; margin: 0; display: flex; flex-direction: column; justify-content: center; height: 100%;">
+                <span
+                  style="font-size: 10px; color: var(--color-text-muted); font-weight: 600; text-transform: uppercase;">Nuevos
+                  Inscritos Est.</span>
+                <span id="result-whatif-enrolled"
+                  style="font-size: 24px; font-weight: 800; color: var(--color-primary); font-family: var(--font-display);">8</span>
+                <span style="font-size: 10px; color: var(--color-text-muted); margin-top: 2px;">Alumnos
+                  proyectados</span>
+              </div>
+              <div class="kpi-card"
+                style="background: rgba(109, 170, 69, 0.05); border: 1px solid rgba(109, 170, 69, 0.15); padding: 12px; margin: 0; display: flex; flex-direction: column; justify-content: center; height: 100%;">
+                <span
+                  style="font-size: 10px; color: var(--color-text-muted); font-weight: 600; text-transform: uppercase;">Facturación
+                  Extra</span>
+                <span id="result-whatif-revenue"
+                  style="font-size: 24px; font-weight: 800; color: var(--color-success); font-family: var(--font-display);">$1,200</span>
+                <span style="font-size: 10px; color: var(--color-text-muted); margin-top: 2px;">Ingreso
+                  incremental</span>
+              </div>
+              <div class="kpi-card"
+                style="grid-column: 1 / -1; background: rgba(139, 92, 246, 0.05); border: 1px solid rgba(139, 92, 246, 0.15); padding: 14px; margin: 0; display: flex; align-items: center; justify-content: space-between;">
+                <div>
+                  <span
+                    style="font-size: 10px; color: var(--color-text-muted); font-weight: 600; text-transform: uppercase; display: block;">Ingreso
+                    Total Proyectado</span>
+                  <span id="result-whatif-total"
+                    style="font-size: 20px; font-weight: 800; color: var(--color-text); font-family: var(--font-display);">$3,200
+                    USD</span>
+                </div>
+                <div style="text-align: right;">
+                  <span
+                    style="font-size: 10px; color: var(--color-text-muted); font-weight: 600; text-transform: uppercase; display: block;">En
+                    Bolívares (VES)</span>
+                  <span id="result-whatif-total-ves"
+                    style="font-size: 16px; font-weight: 700; color: var(--color-text-muted);">116,800.00 VES</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Chart JS grid -->
+        <div class="charts-grid" style="width: 100%;">
+          <div class="chart-card">
+            <h3>Efectividad por Origen de Leads</h3>
+            <div style="position: relative; height: 250px;">
+              <canvas id="chart-lead-source"></canvas>
+            </div>
+          </div>
+          <div class="chart-card">
+            <h3>Ingresos Generados por Curso (USD)</h3>
+            <div style="position: relative; height: 250px;">
+              <canvas id="chart-course-revenue"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <div class="charts-grid" style="width: 100%;">
+          <div class="chart-card">
+            <h3>Prospectos Activos por Etapa (Embudo)</h3>
+            <div style="position: relative; height: 250px;">
+              <canvas id="chart-funnel-stages"></canvas>
+            </div>
+          </div>
+          <div class="chart-card">
+            <h3>Distribución de Motivos de Pérdida</h3>
+            <div style="position: relative; height: 250px;">
+              <canvas id="chart-lost-reasons"></canvas>
+            </div>
+            <div class="table-responsive"
+              style="margin-top: 15px; border-top: 1px solid var(--color-border); padding-top: 12px;">
+              <table class="students-table" style="font-size: 11px; background: transparent;">
+                <thead>
+                  <tr>
+                    <th>Motivo de Pérdida</th>
+                    <th style="text-align: center;">Prospectos</th>
+                    <th style="text-align: right;">Dinero Perdido (USD)</th>
+                    <th style="text-align: right;">% del Total Perdido</th>
+                  </tr>
+                </thead>
+                <tbody id="lost-reasons-metrics-body">
+                  <!-- Populated dynamically in JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- SALES COORDINATORS PERFORMANCE (Opción C) -->
+        <div class="chart-card" style="width: 100%; padding: 20px; margin-top: 10px;">
+          <h3
+            style="font-size: 15px; font-weight: 700; color: var(--color-text); display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+            👥 Rendimiento por Coordinador / Asesor de Ventas
+          </h3>
+          <p class="section-desc" style="margin-bottom: 16px;">Mide el desempeño individual de cierre de inscripciones y
+            recaudación lograda por cada miembro del equipo.</p>
+
+          <div class="table-responsive">
+            <table class="students-table"
+              style="background: var(--color-bg); border: 1px solid var(--color-border); border-radius: var(--border-radius-sm);">
+              <thead>
+                <tr>
+                  <th>Asesor / Coordinador</th>
+                  <th style="text-align: center;">Leads Asignados</th>
+                  <th style="text-align: center;">Alumnos Inscritos</th>
+                  <th style="text-align: right;">Recaudación Lograda (USD)</th>
+                  <th style="text-align: right;">Recaudación Lograda (VES)</th>
+                  <th style="text-align: right; color: var(--color-primary);">Tasa de Conversión</th>
+                </tr>
+              </thead>
+              <tbody id="sales-coordinators-performance-body">
+                <!-- Populated dynamically in JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 2: FINANCIERO CONTENT (EXPENSES AND COMMISSIONS) -->
+      <div id="rep-tab-financiero-content" style="display: none; flex-direction: column; gap: 20px; width: 100%;">
+        <div class="tareas-container" style="display: grid; grid-template-columns: 1fr 320px; gap: 20px; width: 100%;">
+          <!-- Table of Expenses -->
+          <div class="table-card">
+            <div
+              style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding: 0 4px; gap: 8px; flex-wrap: wrap;">
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <h3 style="margin: 0; font-size: 14px; font-weight: 700;">Gastos Operativos Registrados</h3>
+                <span id="expenses-count" class="badge-count">0</span>
+              </div>
+              <div style="display: flex; gap: 8px;">
+                <button class="btn btn-secondary" onclick="exportSalesConversionReportPDF()"
+                  style="display: inline-flex; align-items: center; gap: 6px; font-size: 12px; padding: 6px 12px; font-weight: 600; background: rgba(255, 255, 255, 0.05); border: 1px solid var(--color-border);" title="Exportar Reporte de Conversión Comercial">
+                  <i data-lucide="trending-up" style="width: 14px; height: 14px; color: var(--color-primary);"></i> Reporte Comercial (PDF)
+                </button>
+                <button class="btn btn-secondary" onclick="exportFinancialReportPDF()"
+                  style="display: inline-flex; align-items: center; gap: 6px; font-size: 12px; padding: 6px 12px; font-weight: 600; background: rgba(255, 255, 255, 0.05); border: 1px solid var(--color-border);">
+                  <i data-lucide="file-text" style="width: 14px; height: 14px;"></i> Exportar P&L (PDF)
+                </button>
+              </div>
+            </div>
+            <div class="table-responsive">
+              <table class="students-table">
+                <thead>
+                  <tr>
+                    <th>Fecha</th>
+                    <th>Categoría</th>
+                    <th>Descripción</th>
+                    <th style="text-align: right;">Monto (USD)</th>
+                    <th style="text-align: right;">Acciones</th>
+                  </tr>
+                </thead>
+                <tbody id="expenses-table-body">
+                  <!-- Rendered dynamically -->
+                </tbody>
+              </table>
+            </div>
+            <div id="expenses-empty-state" class="empty-state" style="display:none; padding: 24px;">
+              <i data-lucide="receipt" class="empty-icon" style="width:36px; height:36px; margin-bottom: 8px;"></i>
+              <p style="font-size: 13px;">No hay egresos registrados para este período.</p>
+            </div>
+          </div>
+
+          <!-- Add Expense Form / Commission Calculator -->
+          <div style="display: flex; flex-direction: column; gap: 20px;">
+            <!-- Register Expense Card -->
+            <div class="chart-card">
+              <h3 style="margin-bottom: 14px;">Registrar Egreso</h3>
+              <form id="expense-form" onsubmit="saveExpense(event)">
+                <div class="form-group" style="margin-bottom: 12px;">
+                  <label for="expense-date">Fecha *</label>
+                  <input type="date" id="expense-date" required
+                    style="width:100%; padding: 8px; background:var(--color-bg); border: 1px solid var(--color-border); border-radius: var(--border-radius-sm); color: var(--color-text);">
+                </div>
+                <div class="form-group" style="margin-bottom: 12px;">
+                  <label for="expense-category">Categoría *</label>
+                  <select id="expense-category" required onchange="handleExpenseCategoryChange()"
+                    style="width:100%; padding: 8px; background:var(--color-bg); border: 1px solid var(--color-border); border-radius: var(--border-radius-sm); color: var(--color-text);">
+                    <option value="Salarios">Salarios / Honorarios</option>
+                    <option value="Publicidad">Publicidad (Meta Ads, etc.)</option>
+                    <option value="Servicios">Servicios (Luz, Internet, Zoom)</option>
+                    <option value="Alquiler">Alquiler de Espacios</option>
+                    <option value="Software">Herramientas Software / Hosting</option>
+                    <option value="Otro">Otro Gasto</option>
+                  </select>
+                </div>
+                <div class="form-group" style="margin-bottom: 12px; display: none;" id="expense-source-group">
+                  <label for="expense-source">Origen de Lead Relacionado</label>
+                  <select id="expense-source"
+                    style="width:100%; padding: 8px; background:var(--color-bg); border: 1px solid var(--color-border); border-radius: var(--border-radius-sm); color: var(--color-text);">
+                    <option value="General">General / Todos</option>
+                    <option value="Instagram">Instagram</option>
+                    <option value="WhatsApp">WhatsApp</option>
+                    <option value="Web">Web</option>
+                    <option value="Referido">Referido</option>
+                    <option value="Presencial">Presencial</option>
+                    <option value="Facebook">Facebook</option>
+                    <option value="TikTok">TikTok</option>
+                  </select>
+                </div>
+                <div class="form-group" style="margin-bottom: 12px;">
+                  <label for="expense-desc">Descripción *</label>
+                  <input type="text" id="expense-desc" required placeholder="Ej. Meta Ads Junio..."
+                    style="width:100%; padding: 8px; background:var(--color-bg); border: 1px solid var(--color-border); border-radius: var(--border-radius-sm); color: var(--color-text);">
+                </div>
+                <div class="form-group" style="margin-bottom: 16px;">
+                  <label for="expense-amount">Monto (USD) *</label>
+                  <input type="number" id="expense-amount" step="0.01" min="0.01" required placeholder="0.00"
+                    style="width:100%; padding: 8px; background:var(--color-bg); border: 1px solid var(--color-border); border-radius: var(--border-radius-sm); color: var(--color-text);">
+                </div>
+                <button type="submit" class="btn btn-primary btn-full">Guardar Egreso</button>
+              </form>
+            </div>
+
+            <!-- Commission Calculator Card -->
+            <div class="chart-card">
+              <h3 style="margin-bottom: 6px;">Calculadora de Comisiones</h3>
+              <p style="font-size: 11.5px; color: var(--color-text-muted); margin-bottom: 14px;">Proyecta la comisión de
+                los coordinadores de ventas sobre el recaudo real.</p>
+
+              <div class="form-group" style="margin-bottom: 12px;">
+                <label for="commission-rate" style="font-size: 11px; font-weight: 600;">Tasa de Comisión (%)</label>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                  <input type="range" id="commission-rate" min="1" max="25" value="5"
+                    style="flex-grow: 1; accent-color: var(--color-primary);" oninput="updateCommissionCalculator()">
+                  <span id="commission-rate-val" style="font-weight: 700; min-width: 30px; text-align: right;">5%</span>
+                </div>
+              </div>
+
+              <div
+                style="background: rgba(255, 255, 255, 0.03); border: 1px solid var(--color-border); border-radius: var(--border-radius-sm); padding: 12px; display: flex; flex-direction: column; gap: 8px;">
+                <div style="display: flex; justify-content: space-between; font-size: 12.5px;">
+                  <span style="color: var(--color-text-muted);">Recaudado Base:</span>
+                  <span id="comm-base-recaudado" style="font-weight: 600;">$0.00 USD</span>
+                </div>
+                <div
+                  style="display: flex; justify-content: space-between; font-size: 13.5px; border-top: 1px solid var(--color-border); padding-top: 6px;">
+                  <span style="font-weight: 600;">Comisión Total:</span>
+                  <span id="comm-total-value" style="font-weight: 700; color: var(--color-success);">$0.00 USD</span>
+                </div>
+                <div
+                  style="display: flex; justify-content: space-between; font-size: 11.5px; color: var(--color-text-muted);">
+                  <span>En VES:</span>
+                  <span id="comm-total-value-ves">0.00 VES</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- MARKETING ROI & CAC ANALYSIS -->
+        <div class="chart-card" style="width: 100%; padding: 20px;">
+          <h3
+            style="font-size: 15px; font-weight: 700; color: var(--color-text); display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+            📊 Análisis de Rendimiento de Marketing (CAC y ROI)
+          </h3>
+          <p class="section-desc" style="margin-bottom: 16px;">Mide el Costo de Adquisición de Clientes (CAC) y el
+            Retorno de Inversión (ROI) cruzando egresos de publicidad con leads inscritos por origen.</p>
+
+          <div
+            style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin-bottom: 16px;">
+            <div class="kpi-card"
+              style="background: rgba(139, 92, 246, 0.04); border: 1px solid rgba(139, 92, 246, 0.12); padding: 14px; margin: 0;">
+              <span
+                style="font-size: 10px; color: var(--color-text-muted); font-weight: 600; text-transform: uppercase;">Inversión
+                en Publicidad</span>
+              <span id="marketing-total-spent"
+                style="font-size: 24px; font-weight: 800; color: var(--color-primary); font-family: var(--font-display);">$0.00</span>
+              <span style="font-size: 10px; color: var(--color-text-muted); margin-top: 2px;">Presupuesto de Ads
+                ejecutado</span>
+            </div>
+            <div class="kpi-card"
+              style="background: rgba(79, 152, 163, 0.04); border: 1px solid rgba(79, 152, 163, 0.12); padding: 14px; margin: 0;">
+              <span
+                style="font-size: 10px; color: var(--color-text-muted); font-weight: 600; text-transform: uppercase;">CAC
+                Promedio Global</span>
+              <span id="marketing-cac-global"
+                style="font-size: 24px; font-weight: 800; color: var(--color-text); font-family: var(--font-display);">$0.00</span>
+              <span style="font-size: 10px; color: var(--color-text-muted); margin-top: 2px;">Costo por alumno
+                inscrito</span>
+            </div>
+            <div class="kpi-card"
+              style="background: rgba(109, 170, 69, 0.04); border: 1px solid rgba(109, 170, 69, 0.12); padding: 14px; margin: 0;">
+              <span
+                style="font-size: 10px; color: var(--color-text-muted); font-weight: 600; text-transform: uppercase;">ROI
+                de Marketing</span>
+              <span id="marketing-roi-global"
+                style="font-size: 24px; font-weight: 800; color: var(--color-success); font-family: var(--font-display);">0%</span>
+              <span style="font-size: 10px; color: var(--color-text-muted); margin-top: 2px;">Retorno sobre gasto
+                publicitario</span>
+            </div>
+          </div>
+
+          <div class="table-responsive">
+            <table class="students-table"
+              style="background: var(--color-bg); border: 1px solid var(--color-border); border-radius: var(--border-radius-sm);">
+              <thead>
+                <tr>
+                  <th>Origen de Leads</th>
+                  <th style="text-align: right;">Inversión Ads</th>
+                  <th style="text-align: right;">Alumnos Inscritos</th>
+                  <th style="text-align: right;">Recaudado Canal</th>
+                  <th style="text-align: right;">CAC Unitario</th>
+                  <th style="text-align: right;">ROI Canal</th>
+                </tr>
+              </thead>
+              <tbody id="marketing-roi-table-body">
+                <!-- Populated dynamically in JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- NEW VISUALIZATION METRICS -->
+        <div class="charts-grid" style="width: 100%; margin-top: 20px;">
+          <div class="chart-card">
+            <h3>Distribución de Métodos de Pago (USD)</h3>
+            <div style="position: relative; height: 250px;">
+              <canvas id="chart-payment-methods"></canvas>
+            </div>
+          </div>
+          <div class="chart-card">
+            <h3>Tendencia Mensual de Registro de Prospectos</h3>
+            <div style="position: relative; height: 250px;">
+              <canvas id="chart-monthly-registrations"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- PENDING PAYMENTS (COLLECTION) MANAGEMENT -->
+        <div class="chart-card" style="width: 100%; padding: 20px; margin-top: 20px;">
+          <h3
+            style="font-size: 15px; font-weight: 700; color: var(--color-text); display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+            📋 Gestión de Cobranza (Saldos Pendientes)
+          </h3>
+          <p class="section-desc" style="margin-bottom: 16px;">Lista de alumnos inscritos que poseen cuotas o saldos
+            pendientes. Envía recordatorios de cobro personalizados vía WhatsApp con conversiones en tiempo real.</p>
+
+          <div class="table-responsive">
+            <table class="students-table"
+              style="background: var(--color-bg); border: 1px solid var(--color-border); border-radius: var(--border-radius-sm);">
+              <thead>
+                <tr>
+                  <th>Alumno</th>
+                  <th>Curso</th>
+                  <th>Teléfono</th>
+                  <th style="text-align: right;">Costo Curso</th>
+                  <th style="text-align: right;">Monto Abonado</th>
+                  <th style="text-align: right; color: var(--color-error);">Saldo Deudor (USD)</th>
+                  <th style="text-align: right; color: var(--color-error);">Saldo Deudor (VES)</th>
+                  <th style="text-align: center;">Acción</th>
+                </tr>
+              </thead>
+              <tbody id="collection-debts-table-body">
+                <!-- Populated dynamically in JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 3: EMBUDO CONTENT (DROP-OFF RATES AND CONVERSIONS) -->
+      <div id="rep-tab-embudo-content" style="display: none; flex-direction: column; gap: 20px; width: 100%;">
+        <div class="chart-card" style="width: 100%;">
+          <h3>Análisis de Cuellos de Botella y Tasa de Traspaso (Drop-off)</h3>
+          <p class="section-desc" style="margin-bottom: 16px;">Mide cuántos prospectos avanzan de una etapa a la
+            siguiente. Un porcentaje bajo de traspaso indica un cuello de botella comercial.</p>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: start; flex-wrap: wrap;">
+            <!-- Conversion Funnel Visualization -->
+            <div id="funnel-conversion-visual" style="display: flex; flex-direction: column; gap: 12px; padding: 10px;">
+              <!-- Populated dynamically in JS -->
+            </div>
+
+            <!-- Table of Drop-off and Metrics -->
+            <div class="table-card" style="border: none; background: transparent; padding: 0; box-shadow: none;">
+              <div class="table-responsive">
+                <table class="students-table"
+                  style="background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--border-radius-md);">
+                  <thead>
+                    <tr>
+                      <th>Paso del Pipeline</th>
+                      <th style="text-align: right;">Cantidad</th>
+                      <th style="text-align: right;">Tasa Avance</th>
+                      <th style="text-align: right;">Pérdida (Drop-off)</th>
+                    </tr>
+                  </thead>
+                  <tbody id="funnel-metrics-table-body">
+                    <!-- Populated dynamically in JS -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PLANTILLAS VIEW -->
+    <section id="view-plantillas" class="view-section" style="display:none; flex-direction: column; gap: 24px;">
+      <div
+        style="background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--border-radius-lg); padding: 24px; box-shadow: var(--shadow-md); width: 100%; max-width: 800px; margin: 0 auto;">
+        <div class="ajustes-card-header"
+          style="margin-bottom: 20px; display: flex; align-items: center; gap: 14px; border-bottom: 1px solid var(--color-border); padding-bottom: 16px;">
+          <div class="ajustes-icon-wrapper success"
+            style="background: rgba(109, 170, 69, 0.15); color: #6daa45; width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+            <i data-lucide="message-square" style="width: 20px; height: 20px;"></i>
+          </div>
+          <div>
+            <h3 style="font-size: 18px; font-weight: 700; color: var(--color-text); margin: 0;">Plantillas de WhatsApp
+            </h3>
+            <p style="font-size: 13px; color: var(--color-text-muted); margin: 4px 0 0 0;">Crea y gestiona tus
+              plantillas de mensajes automatizados de WhatsApp. Usa las variables: <b>{nombre}</b>, <b>{curso}</b>,
+              <b>{precio}</b> / <b>{saldo}</b> (resta abonos), <b>{abonado}</b> (monto pagado), <b>{total}</b> y
+              <b>{duracion}</b>.</p>
+          </div>
+        </div>
+        <div class="ajustes-card-body" style="display: flex; flex-direction: column; gap: 20px;">
+          <div id="ajustes-templates-list"
+            style="max-height: 350px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; border: 1px solid var(--color-border); padding: 16px; border-radius: var(--border-radius-sm); background: rgba(0,0,0,0.08);">
+            <!-- Rendered in JS -->
+          </div>
+          <h4 style="margin: 10px 0 0 0; font-size: 14.5px; font-weight: 700; color: var(--color-text);">Agregar Nueva
+            Plantilla</h4>
+          <form id="ajustes-template-form" onsubmit="addCustomTemplate(event)"
+            style="display: flex; flex-direction: column; gap: 12px;">
+            <input type="text" id="new-template-name" required placeholder="Nombre de la plantilla (Ej. Info Completa)"
+              style="font-size: 13px; padding: 10px; background: var(--color-bg); border: 1px solid var(--color-border); border-radius: var(--border-radius-sm); color: var(--color-text); width: 100%;">
+            <textarea id="new-template-text" required
+              placeholder="Hola {nombre}, te escribo de Academia CTD para darte info del curso de {curso}..." rows="4"
+              style="font-size: 13px; padding: 10px; background: var(--color-bg); border: 1px solid var(--color-border); border-radius: var(--border-radius-sm); color: var(--color-text); width: 100%; resize: vertical;"></textarea>
+            <button type="submit" class="btn btn-success"
+              style="align-self: flex-end; padding: 8px 16px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px;">
+              <i data-lucide="plus" style="width: 16px; height: 16px;"></i> Agregar Plantilla
+            </button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- AJUSTES VIEW -->
+    <section id="view-ajustes" class="view-section" style="display:none;">
+      <div class="ajustes-grid">
+        <!-- Academy Profile settings card -->
+        <div class="ajustes-card" style="grid-column: span 2;">
+          <div class="ajustes-card-header">
+            <div class="ajustes-icon-wrapper primary" style="background: rgba(32, 38, 74, 0.1); color: #20264a;">
+              <i data-lucide="building"></i>
+            </div>
+            <div>
+              <h3>Perfil de la Academia</h3>
+              <p>Actualiza la información de la academia que se reflejará dinámicamente en los documentos, recibos, constancias y contratos PDF.</p>
+            </div>
+          </div>
+          <div class="ajustes-card-body" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 100%;">
+            <div class="form-group" style="margin: 0;">
+              <label for="ajustes-academy-nombre" style="font-size: 11px; font-weight: 600; text-transform: uppercase;">Nombre de la Academia</label>
+              <input type="text" id="ajustes-academy-nombre" placeholder="Ej. Academia CTD">
+            </div>
+            <div class="form-group" style="margin: 0;">
+              <label for="ajustes-academy-eslogan" style="font-size: 11px; font-weight: 600; text-transform: uppercase;">Eslogan o Subtítulo</label>
+              <input type="text" id="ajustes-academy-eslogan" placeholder="Ej. Centro de Tecnología y Diseño">
+            </div>
+            <div class="form-group" style="margin: 0; grid-column: span 2;">
+              <label for="ajustes-academy-direccion" style="font-size: 11px; font-weight: 600; text-transform: uppercase;">Dirección de la Academia</label>
+              <input type="text" id="ajustes-academy-direccion" placeholder="Ej. San Antonio de los Altos, Edo. Miranda">
+            </div>
+            <div class="form-group" style="margin: 0;">
+              <label for="ajustes-academy-telefono" style="font-size: 11px; font-weight: 600; text-transform: uppercase;">Teléfono de Contacto</label>
+              <input type="text" id="ajustes-academy-telefono" placeholder="Ej. +58 412-1234567">
+            </div>
+            <div class="form-group" style="margin: 0;">
+              <label for="ajustes-academy-email" style="font-size: 11px; font-weight: 600; text-transform: uppercase;">Correo de Contacto</label>
+              <input type="email" id="ajustes-academy-email" placeholder="Ej. contacto@academiactd.com">
+            </div>
+            <div style="grid-column: span 2; display: flex; justify-content: flex-end; margin-top: 8px;">
+              <button class="btn btn-primary" onclick="saveAcademyProfileSettings()" style="width: 150px;">Guardar Cambios</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Active Coordinator & Admin Security Card -->
+        <div class="ajustes-card">
+          <div class="ajustes-card-header">
+            <div class="ajustes-icon-wrapper primary" style="background: rgba(32, 38, 74, 0.1); color: #20264a;">
+              <i data-lucide="shield"></i>
+            </div>
+            <div>
+              <h3>Perfil y Seguridad Admin</h3>
+              <p>Define el nombre del administrador y cambia su contraseña de acceso al CRM.</p>
+            </div>
+          </div>
+          <div class="ajustes-card-body" style="margin-top: auto; display: flex; flex-direction: column; gap: 12px; width: 100%;">
+            <div class="form-group" style="margin: 0; display: flex; flex-direction: column; gap: 4px;">
+              <label for="ajustes-username" style="font-size: 10px; font-weight: 600; text-transform: uppercase;">Nombre de Usuario Admin</label>
+              <div style="display: flex; gap: 8px;">
+                <input type="text" id="ajustes-username" placeholder="Ej. Admin CTD" style="flex-grow: 1;">
+                <button class="btn btn-primary" onclick="saveUsernameSettings()">Guardar</button>
+              </div>
+            </div>
+            <div class="form-group" style="margin: 0; display: flex; flex-direction: column; gap: 4px; border-top: 1px dashed var(--color-border); padding-top: 10px;">
+              <label for="ajustes-admin-password" style="font-size: 10px; font-weight: 600; text-transform: uppercase;">Nueva Contraseña Admin</label>
+              <div style="display: flex; gap: 8px;">
+                <input type="password" id="ajustes-admin-password" placeholder="Nueva contraseña" style="flex-grow: 1; padding: 8px 12px; font-size: 13px; background: var(--color-bg); border: 1px solid var(--color-border); color: var(--color-text); border-radius: var(--border-radius-sm);">
+                <button class="btn btn-primary" onclick="saveAdminPasswordSettings()">Cambiar</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Tasa de Cambio (BCV/VES) Card -->
+        <div class="ajustes-card">
+          <div class="ajustes-card-header">
+            <div class="ajustes-icon-wrapper warning" style="background: rgba(247, 172, 5, 0.15); color: #f7ac05;">
+              <i data-lucide="dollar-sign"></i>
+            </div>
+            <div>
+              <h3>Tasa de Cambio (BCV / VES)</h3>
+              <p>Establece la tasa oficial del BCV o paralelo para calcular de forma automática los montos equivalentes
+                en Bolívares (VES) en recibos y pagos.</p>
+            </div>
+          </div>
+          <div class="ajustes-card-body" style="margin-top: auto; display: flex; gap: 8px; flex-direction: column;">
+            <div style="display: flex; gap: 8px;">
+              <input type="number" id="ajustes-tasa-bcv" placeholder="Ej. 36.50" step="0.01"
+                style="flex-grow: 1; padding: 8px 12px; font-size: 13px; background: var(--color-bg); border: 1px solid var(--color-border); color: var(--color-text); border-radius: var(--border-radius-sm);">
+              <button class="btn btn-primary" onclick="saveTasaBCVSettings()">Guardar</button>
+            </div>
+            <button class="btn btn-ghost btn-sm" onclick="fetchTasaBCVAuto()"
+              style="font-size: 11px; padding: 6px; color: var(--color-primary); display: flex; align-items: center; justify-content: center; gap: 6px; border: 1px solid var(--color-border); border-radius: var(--border-radius-sm); background: transparent; cursor: pointer;">
+              <i data-lucide="refresh-cw" style="width: 12px; height: 12px;"></i> Consultar Tasa BCV automáticamente
+            </button>
+            <label style="display: flex; align-items: center; gap: 8px; font-size: 11.5px; color: var(--color-text-muted); cursor: pointer; margin-top: 8px; font-weight: 500;">
+              <input type="checkbox" id="ajustes-bcv-auto" onchange="toggleBCVAutoSettings()" style="width: auto; margin: 0; cursor: pointer;">
+              Actualizar tasa por API al iniciar el CRM
+            </label>
+          </div>
+        </div>
+
+        <!-- Google Sheets Cloud Sync Card -->
+        <div class="ajustes-card">
+          <div class="ajustes-card-header">
+            <div class="ajustes-icon-wrapper info" style="background: rgba(30, 142, 62, 0.15); color: #1e8e3e;">
+              <i data-lucide="sheet"></i>
+            </div>
+            <div>
+              <h3>Sincronización en la Nube (Google Sheets)</h3>
+              <p>Conecta el CRM con una hoja de cálculo en la nube para sincronizar todos tus datos en tiempo real entre múltiples dispositivos.</p>
+            </div>
+          </div>
+          <div class="ajustes-card-body" style="margin-top: auto; display: flex; gap: 10px; flex-direction: column;">
+            <div style="display: flex; flex-direction: column; gap: 4px;">
+              <label for="ajustes-sheets-url" style="font-size: 10px; font-weight: 600; text-transform: uppercase;">URL del Web App de Google Apps Script</label>
+              <div style="display: flex; gap: 8px;">
+                <input type="text" id="ajustes-sheets-url" placeholder="https://script.google.com/macros/s/.../exec"
+                  style="flex-grow: 1; padding: 8px 12px; font-size: 13px; background: var(--color-bg); border: 1px solid var(--color-border); color: var(--color-text); border-radius: var(--border-radius-sm);">
+                <button class="btn btn-primary" onclick="saveGoogleSheetsSettings()">Conectar</button>
+              </div>
+            </div>
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 6px;">
+              <label style="display: flex; align-items: center; gap: 8px; font-size: 11.5px; color: var(--color-text-muted); cursor: pointer; font-weight: 500; margin: 0;">
+                <input type="checkbox" id="ajustes-sheets-enabled" onchange="toggleGoogleSheetsSync()" style="width: auto; margin: 0; cursor: pointer;">
+                Activar Sincronización en la Nube
+              </label>
+              <span id="sheets-sync-status" class="badge" style="font-size: 10px; padding: 3px 8px; background: rgba(0,0,0,0.05); color: var(--color-text-muted); border: 1px solid var(--color-border);">Desconectado</span>
+            </div>
+            <div id="sheets-sync-actions" style="display: none; gap: 8px; margin-top: 4px;">
+              <button class="btn btn-ghost btn-sm" onclick="syncCloudNow('pull')" style="flex: 1; font-size: 11px; padding: 6px; border: 1px solid var(--color-border); border-radius: var(--border-radius-sm); cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; background: transparent;">
+                <i data-lucide="download" style="width: 12px; height: 12px;"></i> Descargar de la Nube
+              </button>
+              <button class="btn btn-ghost btn-sm" onclick="syncCloudNow('push')" style="flex: 1; font-size: 11px; padding: 6px; border: 1px solid var(--color-border); border-radius: var(--border-radius-sm); cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; background: transparent;">
+                <i data-lucide="upload" style="width: 12px; height: 12px;"></i> Subir a la Nube
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Export Card -->
+        <div class="ajustes-card">
+          <div class="ajustes-card-header">
+            <div class="ajustes-icon-wrapper success">
+              <i data-lucide="download-cloud"></i>
+            </div>
+            <div>
+              <h3>Exportar Alumnos</h3>
+              <p>Genera y descarga un archivo CSV con toda la información de tus prospectos.</p>
+            </div>
+          </div>
+          <div class="ajustes-card-body">
+            <button class="btn btn-success btn-full" onclick="exportToCSV()">
+              <i data-lucide="download-cloud"></i> Exportar a CSV
+            </button>
+          </div>
+        </div>
+
+        <!-- Import Card -->
+        <div class="ajustes-card">
+          <div class="ajustes-card-header">
+            <div class="ajustes-icon-wrapper primary">
+              <i data-lucide="upload-cloud"></i>
+            </div>
+            <div>
+              <h3>Importar Alumnos</h3>
+              <p>Carga alumnos masivamente. El importador asocia los nombres de los cursos con los existentes o creará
+                nuevos si es necesario.</p>
+            </div>
+          </div>
+          <div class="ajustes-card-body">
+            <div class="import-zone" id="csv-drop-zone">
+              <i data-lucide="upload-cloud" class="import-icon"></i>
+              <p class="import-title">Arrastra tu archivo CSV o haz clic aquí</p>
+              <p class="import-subtitle">Formatos admitidos: .csv (Máx 5MB)</p>
+              <input type="file" id="csv-file-input" accept=".csv" style="display: none;"
+                onchange="handleCSVFileSelect(event)">
+            </div>
+          </div>
+        </div>
+
+        <!-- Notifications Card -->
+        <div class="ajustes-card">
+          <div class="ajustes-card-header">
+            <div class="ajustes-icon-wrapper primary" id="notif-icon-wrapper">
+              <i data-lucide="bell"></i>
+            </div>
+            <div>
+              <h3>Notificaciones del Sistema</h3>
+              <p>Permite recibir alertas locales nativas en tu equipo cuando cambien etapas o se registren prospectos.
+              </p>
+            </div>
+          </div>
+          <div class="ajustes-card-body">
+            <button class="btn btn-primary btn-full" id="btn-toggle-notifications"
+              onclick="requestNotificationPermission()">
+              <i data-lucide="bell"></i> Activar Notificaciones
+            </button>
+          </div>
+        </div>
+
+        <!-- Meta & WhatsApp Cloud API Integration Card -->
+        <div class="ajustes-card" style="grid-column: span 2;">
+          <div class="ajustes-card-header">
+            <div class="ajustes-icon-wrapper success" style="background: rgba(37, 211, 102, 0.15); color: #25d366;">
+              <i data-lucide="message-circle"></i>
+            </div>
+            <div>
+              <h3>Conexión Meta & WhatsApp Cloud API</h3>
+              <p>Vincula tu cuenta de WhatsApp Business para enviar mensajes y recordatorios de cobro de forma 100% automatizada a través de los servidores oficiales de Meta.</p>
+            </div>
+          </div>
+          <div class="ajustes-card-body" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 100%;">
+            <div class="form-group" style="margin: 0; grid-column: span 2;">
+              <label for="meta-api-token" style="font-size: 11px; font-weight: 600; text-transform: uppercase;">Token de Acceso Permanente (System User Token)</label>
+              <input type="password" id="meta-api-token" placeholder="EAABw..." style="width: 100%;">
+            </div>
+            <div class="form-group" style="margin: 0;">
+              <label for="meta-phone-id" style="font-size: 11px; font-weight: 600; text-transform: uppercase;">ID del Teléfono (Phone Number ID)</label>
+              <input type="text" id="meta-phone-id" placeholder="Ej. 109876543210987" style="width: 100%;">
+            </div>
+            <div class="form-group" style="margin: 0;">
+              <label for="meta-waba-id" style="font-size: 11px; font-weight: 600; text-transform: uppercase;">ID de Cuenta de WhatsApp Business (WABA ID)</label>
+              <input type="text" id="meta-waba-id" placeholder="Ej. 209876543210987" style="width: 100%;">
+            </div>
+            <div style="grid-column: span 2; display: flex; gap: 12px; justify-content: flex-end; margin-top: 8px;">
+              <button class="btn btn-ghost" onclick="testMetaConnection()" style="height: 38px; border: 1px solid var(--color-border); font-weight: 600;">Probar Conexión</button>
+              <button class="btn btn-primary" onclick="saveMetaSettings()" style="height: 38px; font-weight: 600;">Guardar Configuración</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Backup & Restore Card -->
+        <div class="ajustes-card" style="grid-column: span 2;">
+          <div class="ajustes-card-header">
+            <div class="ajustes-icon-wrapper success" style="background: rgba(109, 170, 69, 0.15); color: #6daa45;">
+              <i data-lucide="database"></i>
+            </div>
+            <div>
+              <h3>Copia de Seguridad Completa (Backup / Restaurar)</h3>
+              <p>Descarga un respaldo en formato JSON con la totalidad de la información (alumnos, cursos, grupos,
+                tareas, plantillas y configuraciones) para recuperarla en cualquier momento.</p>
+            </div>
+          </div>
+          <div class="ajustes-card-body" style="display: flex; flex-direction: column; gap: 12px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--color-border); padding-bottom: 12px; margin-bottom: 8px; flex-wrap: wrap; gap: 12px;">
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <span style="font-size: 12px; font-weight: 600; color: var(--color-text);">Recordatorio de Respaldo:</span>
+                <select id="ajustes-backup-freq" onchange="changeBackupFreqSettings()" style="padding: 6px 12px; font-size: 12px; background: var(--color-bg); border: 1px solid var(--color-border); color: var(--color-text); border-radius: var(--border-radius-sm);">
+                  <option value="semanal">Semanal</option>
+                  <option value="mensual">Mensual</option>
+                  <option value="desactivado">Desactivado</option>
+                </select>
+              </div>
+              <span id="ajustes-backup-last-date" style="font-size: 11px; color: var(--color-text-muted);">Último respaldo: Nunca</span>
+            </div>
+            <div style="display: flex; gap: 16px; flex-wrap: wrap; width: 100%;">
+              <button class="btn btn-success"
+                style="flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 8px;"
+                onclick="exportBackupJSON()">
+                <i data-lucide="download"></i> Exportar Respaldo Completo (.JSON)
+              </button>
+              <button class="btn btn-primary"
+                style="flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 8px;"
+                onclick="document.getElementById('backup-file-input').click()">
+                <i data-lucide="upload"></i> Importar Respaldo (.JSON)
+              </button>
+              <input type="file" id="backup-file-input" accept=".json" style="display: none;"
+                onchange="importBackupJSON(event)">
+            </div>
+          </div>
+        </div>
+
+        <!-- Dynamic Sales Advisors Management Card -->
+        <div id="ajustes-asesores-card" class="ajustes-card" style="grid-column: span 2;">
+          <div class="ajustes-card-header">
+            <div class="ajustes-icon-wrapper primary" style="background: rgba(139, 92, 246, 0.15); color: #8b5cf6;">
+              <i data-lucide="users"></i>
+            </div>
+            <div>
+              <h3>Gestión de Asesores de Ventas</h3>
+              <p>Crea, administra y elimina cuentas de acceso para los asesores de ventas del CRM. Tienen acceso restringido sin visualización financiera.</p>
+            </div>
+          </div>
+          <div class="ajustes-card-body" style="display: grid; grid-template-columns: 1fr 1.5fr; gap: 20px; width: 100%;">
+            <!-- Form to Add Advisor -->
+            <form id="ajustes-asesor-form" onsubmit="addSalesAdvisor(event)" style="display: flex; flex-direction: column; gap: 12px; border-right: 1px solid var(--color-border); padding-right: 20px;">
+              <h4 style="font-size: 13px; font-weight: 700; text-transform: uppercase; margin-bottom: 4px;">Nuevo Asesor</h4>
+              <div class="form-group" style="margin: 0;">
+                <label for="new-asesor-nombre" style="font-size: 10px; font-weight: 600; text-transform: uppercase;">Nombre Completo</label>
+                <input type="text" id="new-asesor-nombre" required placeholder="Ej. Ana Gómez" style="width: 100%;">
+              </div>
+              <div class="form-group" style="margin: 0;">
+                <label for="new-asesor-username" style="font-size: 10px; font-weight: 600; text-transform: uppercase;">Nombre de Usuario (Login)</label>
+                <input type="text" id="new-asesor-username" required placeholder="Ej. ana" style="width: 100%;">
+              </div>
+              <div class="form-group" style="margin: 0;">
+                <label for="new-asesor-password" style="font-size: 10px; font-weight: 600; text-transform: uppercase;">Contraseña</label>
+                <input type="password" id="new-asesor-password" required placeholder="Contraseña secreta" style="width: 100%;">
+              </div>
+              <button type="submit" class="btn btn-primary" style="margin-top: 8px; width: 100%; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                <i data-lucide="plus-circle" style="width: 16px; height: 16px;"></i> Registrar Asesor
+              </button>
+            </form>
+
+            <!-- List of Advisors -->
+            <div>
+              <h4 style="font-size: 13px; font-weight: 700; text-transform: uppercase; margin-bottom: 12px;">Asesores Registrados</h4>
+              <div id="ajustes-asesores-list" style="display: flex; flex-direction: column; gap: 8px; max-height: 250px; overflow-y: auto; padding-right: 6px;">
+                <!-- Dynamically populated -->
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- System Reset Card -->
+        <div class="ajustes-card danger">
+          <div class="ajustes-card-header">
+            <div class="ajustes-icon-wrapper danger">
+              <i data-lucide="alert-triangle"></i>
+            </div>
+            <div>
+              <h3>Restablecer Todo</h3>
+              <p>Elimina permanentemente alumnos, cursos personalizados e historial, restableciendo los valores
+                predeterminados de fábrica.</p>
+            </div>
+          </div>
+          <div class="ajustes-card-body">
+            <button class="btn btn-danger btn-full" onclick="clearAllSystemData()">
+              <i data-lucide="trash-2"></i> Limpiar Base de Datos
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- MODAL: ALUMNO (AGREGAR / EDITAR) -->
+  <template id="student-modal-template">
+    <div id="student-modal" class="modal-overlay" onclick="handleModalOverlayClick(event, 'student-modal')">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h3 id="student-modal-title">Nuevo Alumno</h3>
+          <button class="btn btn-ghost close-btn btn-icon-sm" onclick="closeStudentModal()"><i
+              data-lucide="x"></i></button>
+        </div>
+        <form id="student-form" onsubmit="saveStudent(event)">
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="student-nombre">Nombre *</label>
+              <input type="text" id="student-nombre" required placeholder="Ej. Carlos">
+            </div>
+            <div class="form-group">
+              <label for="student-apellido">Apellido</label>
+              <input type="text" id="student-apellido" placeholder="Ej. Mendoza">
+            </div>
+            <div class="form-group">
+              <label for="student-cedula">Cédula / Documento</label>
+              <input type="text" id="student-cedula" placeholder="Ej. V-12345678">
+            </div>
+            <div class="form-group">
+              <label for="student-email">Email</label>
+              <input type="email" id="student-email" placeholder="carlos@correo.com">
+            </div>
+            <div class="form-group">
+              <label for="student-tel">WhatsApp</label>
+              <input type="text" id="student-tel" placeholder="Ej. +584121234567">
+              <span
+                style="font-size: 11px; color: var(--color-text-muted); display: block; margin-top: 4px; opacity: 0.8;">Ej:
+                04121234567 (se auto-corregirá con +58)</span>
+            </div>
+            <div class="form-group">
+              <label for="student-curso">Curso de interés *</label>
+              <select id="student-curso" required></select>
+            </div>
+            <div class="form-group">
+              <label for="student-etapa">Etapa del pipeline *</label>
+              <select id="student-etapa" required>
+                <option value="Nuevo">Nuevo</option>
+                <option value="Contactado">Contactado</option>
+                <option value="Interesado">Interesado</option>
+                <option value="Negociando">Negociando</option>
+                <option value="Inscrito">Inscrito</option>
+                <option value="Perdido">Perdido</option>
+              </select>
+            </div>
+            <div class="form-group" id="student-academic-group-container" style="display: none;">
+              <label for="student-academic-group">Grupo / Cohorte Directo</label>
+              <select id="student-academic-group">
+                <!-- Populated dynamically -->
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="student-prioridad">Prioridad</label>
+              <select id="student-prioridad">
+                <option value="Baja">Baja</option>
+                <option value="Media" selected>Media</option>
+                <option value="Alta">Alta</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="student-origen">Origen del Lead</label>
+              <select id="student-origen">
+                <option value="Instagram">Instagram</option>
+                <option value="WhatsApp">WhatsApp</option>
+                <option value="Referido">Referido</option>
+                <option value="Web" selected>Web</option>
+                <option value="Presencial">Presencial</option>
+                <option value="Facebook">Facebook</option>
+                <option value="TikTok">TikTok</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="student-instagram">Usuario de Instagram</label>
+              <input type="text" id="student-instagram" placeholder="Ej. @carlos_m">
+            </div>
+            <div class="form-group">
+              <label for="student-nivel">Nivel de Conocimiento</label>
+              <select id="student-nivel">
+                <option value="Principiante" selected>Principiante</option>
+                <option value="Intermedio">Intermedio</option>
+                <option value="Avanzado">Avanzado</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="student-dia">Días Preferidos *</label>
+              <select id="student-dia" required>
+                <option value="Lunes a Viernes" selected>Lunes a Viernes 📅</option>
+                <option value="Lunes a Sábado">Lunes a Sábado 📅</option>
+                <option value="Lunes">Lunes 🗓️</option>
+                <option value="Martes">Martes 🗓️</option>
+                <option value="Miércoles">Miércoles 🗓️</option>
+                <option value="Jueves">Jueves 🗓️</option>
+                <option value="Viernes">Viernes 🗓️</option>
+                <option value="Sábado">Sábado 🗓️</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="student-horario">Horario Preferido *</label>
+              <select id="student-horario" required>
+                <option value="" disabled>Seleccione</option>
+                <option value="9am - 11am" selected>9am - 11am ⏰</option>
+                <option value="10am - 12pm">10am - 12pm ⏰</option>
+                <option value="11am - 1pm">11am - 1pm ⏰</option>
+                <option value="2pm - 5pm">2pm - 5pm ⏰</option>
+                <option value="2pm - 3:30pm">2pm - 3:30pm ⏰</option>
+                <option value="3:30pm - 5pm">3:30pm - 5pm ⏰</option>
+                <option value="5:15pm - 7:00pm">5:15pm - 7:00pm ⏰</option>
+                <option value="9am - 12pm">9am - 12pm ⏰</option>
+                <option value="9am - 1pm">9am - 1pm ⏰</option>
+                <option value="a convenir">a convenir 🤝</option>
+              </select>
+            </div>
+            <div class="form-group" id="student-coordinador-container">
+              <label for="student-coordinador">Asesor Responsable *</label>
+              <select id="student-coordinador" required>
+                <!-- Populated dynamically -->
+              </select>
+            </div>
+          </div>
+          <div class="form-group" id="note-initial-group" style="margin-top: 16px;">
+            <label for="student-nota">Nota de Seguimiento Inicial</label>
+            <textarea id="student-nota" rows="3" placeholder="Ingresa detalles sobre el contacto inicial..."></textarea>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-ghost" onclick="closeStudentModal()">Cancelar</button>
+            <button type="submit" class="btn btn-primary">Guardar Alumno</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </template>
+
+  <!-- MODAL: CURSO (AGREGAR / EDITAR) -->
+  <template id="course-modal-template">
+    <div id="course-modal" class="modal-overlay" onclick="handleModalOverlayClick(event, 'course-modal')">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h3 id="course-modal-title">Agregar Curso</h3>
+          <button class="btn btn-ghost close-btn btn-icon-sm" onclick="closeCourseModal()"><i
+              data-lucide="x"></i></button>
+        </div>
+        <form id="course-form" onsubmit="saveCourse(event)">
+          <div class="form-group">
+            <label for="course-nombre">Nombre del Curso *</label>
+            <input type="text" id="course-nombre" required placeholder="Ej. Modelado 3D con Blender">
+          </div>
+          <div class="form-grid" style="margin-top: 16px;">
+            <div class="form-group">
+              <label for="course-precio">Precio (USD) *</label>
+              <input type="number" id="course-precio" required min="0" placeholder="Ej. 75">
+            </div>
+            <div class="form-group">
+              <label for="course-duracion">Duración *</label>
+              <div style="position: relative; display: flex; align-items: center; width: 100%;">
+                <input type="number" id="course-duracion" required min="1" placeholder="Ej. 8" style="padding-right: 85px; width: 100%;">
+                <span style="position: absolute; right: 12px; font-size: 14px; color: var(--color-text-muted); pointer-events: none; font-weight: 500;">semanas</span>
+              </div>
+            </div>
+          </div>
+          <div class="form-group" style="margin-top: 16px;">
+            <label for="course-desc">Descripción corta</label>
+            <textarea id="course-desc" rows="3" placeholder="Describe brevemente el plan formativo..."></textarea>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-ghost" onclick="closeCourseModal()">Cancelar</button>
+            <button type="submit" id="course-submit-btn" class="btn btn-primary">Crear Curso</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </template>
+
+  <!-- MODAL: COHORTE / GRUPO (AGREGAR / EDITAR) -->
+  <template id="cohort-modal-template">
+    <div id="cohort-modal" class="modal-overlay" onclick="handleModalOverlayClick(event, 'cohort-modal')">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h3 id="cohort-modal-title">Crear Cohorte / Grupo</h3>
+          <button class="btn btn-ghost close-btn btn-icon-sm" onclick="closeCohortModal()"><i
+              data-lucide="x"></i></button>
+        </div>
+        <form id="cohort-form" onsubmit="saveCohort(event)">
+          <div class="form-group">
+            <label for="cohort-nombre">Nombre de la Cohorte / Grupo *</label>
+            <input type="text" id="cohort-nombre" required placeholder="Ej. Marketing Digital - Grupo B (Agosto)">
+          </div>
+          <div class="form-group" style="margin-top: 16px;">
+            <label for="cohort-curso">Curso Asociado *</label>
+            <select id="cohort-curso" required></select>
+          </div>
+          <div class="form-grid" style="margin-top: 16px;">
+            <div class="form-group">
+              <label for="cohort-inicio">Fecha de Inicio *</label>
+              <input type="date" id="cohort-inicio" required>
+            </div>
+            <div class="form-group">
+              <label for="cohort-fin">Fecha de Finalización *</label>
+              <input type="date" id="cohort-fin" required>
+            </div>
+          </div>
+          <div class="form-group" style="margin-top: 16px;">
+            <label for="cohort-capacidad">Capacidad Máxima de Alumnos *</label>
+            <input type="number" id="cohort-capacidad" required min="1" placeholder="Ej. 15" value="15">
+          </div>
+          <div class="form-group" style="margin-top: 16px;">
+            <label for="cohort-estatus">Estatus Académico *</label>
+            <select id="cohort-estatus" required>
+              <option value="Activo">Activo 📖</option>
+              <option value="Graduado">Graduado 🎓</option>
+              <option value="Cancelado">Cancelado ❌</option>
+            </select>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-ghost" onclick="closeCohortModal()">Cancelar</button>
+            <button type="submit" id="cohort-submit-btn" class="btn btn-primary">Crear Grupo</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </template>
+
+  <!-- MODAL: VER ALUMNOS DE COHORTE / GRUPO -->
+  <template id="cohort-view-students-modal-template">
+    <div id="cohort-view-students-modal" class="modal-overlay"
+      onclick="handleModalOverlayClick(event, 'cohort-view-students-modal')">
+      <div class="modal-card" style="width: 100%; max-width: 800px; padding: 24px;">
+        <div class="modal-header" style="margin-bottom: 16px;">
+          <h3 id="cohort-view-students-modal-title">Alumnos del Grupo</h3>
+          <button class="btn btn-ghost close-btn btn-icon-sm" onclick="closeCohortViewStudentsModal()"><i
+              data-lucide="x"></i></button>
+        </div>
+        <div id="cohort-view-students-table-container" class="table-responsive"
+          style="margin: 16px 0; max-height: 400px; overflow-y: auto;">
+          <table class="students-table" style="width: 100%;">
+            <thead>
+              <tr>
+                <th>Nombre y Apellido</th>
+                <th>Cédula / Documento</th>
+                <th>Teléfono / WhatsApp</th>
+                <th style="text-align: center;">Estatus de Pago</th>
+                <th>Estatus Académico</th>
+                <th style="text-align: right;">Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="cohort-view-students-tbody">
+              <!-- Populated dynamically -->
+            </tbody>
+          </table>
+        </div>
+        <div id="cohort-view-students-empty-state" class="empty-state"
+          style="display: none; padding: 40px; text-align: center;">
+          <i data-lucide="users" class="empty-icon"
+            style="width: 48px; height: 48px; opacity: 0.5; margin-bottom: 12px; margin-left: auto; margin-right: auto; display: block;"></i>
+          <p style="color: var(--color-text-muted); font-size: 14px;">No hay alumnos inscritos en este grupo.</p>
+        </div>
+        <div class="modal-footer" style="margin-top: 16px; justify-content: flex-end;">
+          <button type="button" class="btn btn-ghost" onclick="closeCohortViewStudentsModal()">Cerrar</button>
+        </div>
+      </div>
+    </div>
+  </template>
+
+  <!-- MODAL: VER ALUMNOS INSCRITOS EN CURSO -->
+  <template id="course-view-enrolled-modal-template">
+    <div id="course-view-enrolled-modal" class="modal-overlay"
+      onclick="handleModalOverlayClick(event, 'course-view-enrolled-modal')">
+      <div class="modal-card" style="width: 100%; max-width: 950px; padding: 24px;">
+        <div class="modal-header" style="margin-bottom: 16px;">
+          <h3 id="course-view-enrolled-modal-title">Alumnos del Curso</h3>
+          <button class="btn btn-ghost close-btn btn-icon-sm" onclick="closeCourseViewEnrolledModal()"><i
+              data-lucide="x"></i></button>
+        </div>
+        <div id="course-view-enrolled-filter-container"
+          style="display: flex; align-items: center; gap: 8px; margin-bottom: 16px; background: rgba(255, 255, 255, 0.03); padding: 8px 12px; border-radius: 6px; border: 1px solid var(--color-border);">
+          <label for="course-view-enrolled-filter"
+            style="font-size: 13px; font-weight: 600; color: var(--color-text-muted);">Filtrar por Estado:</label>
+          <select id="course-view-enrolled-filter" onchange="filterCourseViewEnrolledStudents()"
+            style="padding: 6px 12px; background: var(--color-surface); border: 1px solid var(--color-border); color: var(--color-text); border-radius: var(--border-radius-sm); font-size: 13px; cursor: pointer;">
+            <option value="todos">Todos los Registrados (Interesados, Inscritos y Perdidos)</option>
+            <option value="interesados">Interesados / Prospectos 💡</option>
+            <option value="Cursando">Cursando 📖</option>
+            <option value="Graduado">Graduado 🎓</option>
+            <option value="Retirado">Retirado 🛑</option>
+            <option value="Perdido">Perdido ❌</option>
+            <option value="Perdido">Interesado </option>
+          </select>
+        </div>
+        <div id="course-view-enrolled-table-container" class="table-responsive"
+          style="margin: 16px 0; max-height: 450px; overflow-y: auto;">
+          <table class="students-table" style="width: 100%;">
+            <thead>
+              <tr>
+                <th>Nombre y Apellido</th>
+                <th>Cédula / Documento</th>
+                <th>Teléfono / WhatsApp</th>
+                <th>Grupo / Cohorte</th>
+                <th style="text-align: center;">Estado / Etapa</th>
+                <th style="text-align: center;">Estatus de Pago</th>
+                <th style="text-align: right;">Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="course-view-enrolled-tbody">
+              <!-- Populated dynamically -->
+            </tbody>
+          </table>
+        </div>
+        <div id="course-view-enrolled-empty-state" class="empty-state"
+          style="display: none; padding: 40px; text-align: center;">
+          <i data-lucide="users" class="empty-icon"
+            style="width: 48px; height: 48px; opacity: 0.5; margin-bottom: 12px; margin-left: auto; margin-right: auto; display: block;"></i>
+          <p style="color: var(--color-text-muted); font-size: 14px;">No hay alumnos inscritos registrados en este
+            curso.</p>
+        </div>
+        <div class="modal-footer" style="margin-top: 16px; justify-content: flex-end;">
+          <button type="button" class="btn btn-ghost" onclick="closeCourseViewEnrolledModal()">Cerrar</button>
+        </div>
+      </div>
+    </div>
+  </template>
+
+  <!-- SLIDE-IN DETAIL PANEL (RIGHT SIDE) -->
+  <div id="detail-panel-overlay" class="detail-sidebar-overlay" onclick="closeDetailPanel()"></div>
+  <div id="detail-panel" class="detail-sidebar">
+    <div class="detail-header">
+      <button class="btn btn-ghost close-btn btn-icon-sm" onclick="closeDetailPanel()"><i
+          data-lucide="arrow-right"></i></button>
+      <h3 class="detail-title">Detalle del Prospecto</h3>
+    </div>
+    <div class="detail-scrollable">
+      <div class="student-avatar-section">
+        <div id="detail-avatar" class="student-avatar-large">U</div>
+        <div class="student-meta-primary">
+          <h4 id="detail-nombre-completo">Nombre Completo</h4>
+          <span id="detail-etapa-badge" class="badge">Etapa</span>
+        </div>
+      </div>
+
+      <div class="detail-quick-actions" style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px;">
+        <button id="btn-quick-inscribe" class="btn btn-success btn-full" onclick="markSelectedAsEnrolled()">
+          <i data-lucide="check-circle"></i> Marcar como Inscrito
+        </button>
+        <div style="display: flex; gap: 6px; width: 100%;">
+          <button class="btn btn-secondary btn-sm" onclick="logQuickContact('WhatsApp')"
+            style="flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 4px; font-size: 11px; padding: 8px; height: 32px; border-color: rgba(109, 170, 69, 0.3); background: rgba(109, 170, 69, 0.05); color: #6daa45;">
+            <i data-lucide="message-square" style="width: 14px; height: 14px;"></i> WhatsApp
+          </button>
+          <button class="btn btn-secondary btn-sm" onclick="logQuickContact('Llamada')"
+            style="flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 4px; font-size: 11px; padding: 8px; height: 32px; border-color: rgba(79, 152, 163, 0.3); background: rgba(79, 152, 163, 0.05); color: #4f98a3;">
+            <i data-lucide="phone" style="width: 14px; height: 14px;"></i> Llamar
+          </button>
+          <button class="btn btn-secondary btn-sm" onclick="logQuickContact('Correo')"
+            style="flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 4px; font-size: 11px; padding: 8px; height: 32px; border-color: rgba(253, 171, 67, 0.3); background: rgba(253, 171, 67, 0.05); color: #fdab43;">
+            <i data-lucide="mail" style="width: 14px; height: 14px;"></i> Correo
+          </button>
+        </div>
+      </div>
+
+      <div class="detail-section">
+        <h5>Mover de Etapa</h5>
+        <div class="stage-pills-container" id="detail-stage-pills">
+          <!-- Rendered in JS -->
+        </div>
+      </div>
+
+      <div class="detail-section">
+        <h5>Información de Contacto & Custom Fields</h5>
+        <div class="detail-info-grid">
+          <div class="info-item">
+            <span class="info-label">Email</span>
+            <div class="info-value-group">
+              <span id="detail-email" class="info-value">correo@ejemplo.com</span>
+              <button class="btn btn-ghost btn-icon-sm" onclick="copyDetailEmail()" title="Copiar Correo">
+                <i data-lucide="copy"></i>
+              </button>
+            </div>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Cédula / Documento</span>
+            <span id="detail-cedula" class="info-value" style="font-weight: 500; color: var(--color-text);">No
+              registrado</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">WhatsApp</span>
+            <div class="info-value-group">
+              <span id="detail-tel" class="info-value">+584120000000</span>
+              <a id="detail-wa-link" href="#" target="_blank" class="btn btn-success btn-icon-sm"
+                title="Abrir WhatsApp">
+                <i data-lucide="message-square"></i>
+              </a>
+            </div>
+          </div>
+          <div class="info-item" style="margin-top: 4px;">
+            <span class="info-label">Enviar WhatsApp con Plantilla</span>
+            <div class="info-value-group" style="margin-top: 4px; display: flex; gap: 8px; padding: 6px;">
+              <select id="detail-wa-template" style="padding: 6px; font-size: 12px; flex-grow: 1;">
+                <!-- Filled dynamically -->
+              </select>
+              <button class="btn btn-success btn-sm btn-icon" onclick="sendWhatsAppTemplate()" style="padding: 8px;"
+                title="Enviar por WhatsApp">
+                <i data-lucide="send" style="width:14px; height:14px;"></i>
+              </button>
+            </div>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Instagram</span>
+            <div class="info-value-group">
+              <a id="detail-instagram" class="info-value" href="#" target="_blank"
+                style="text-decoration: none; color: inherit;">@usuario</a>
+              <a id="detail-ig-link" href="#" target="_blank" class="btn btn-ghost btn-icon-sm"
+                title="Ver perfil de Instagram">
+                <i data-lucide="instagram"></i>
+              </a>
+            </div>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Curso Solicitado</span>
+            <span id="detail-curso" class="info-value" style="font-weight: 600;">Diseño Gráfico</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Origen</span>
+            <span id="detail-origen" class="info-value">Instagram</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Prioridad</span>
+            <span id="detail-prioridad" class="badge">Prioridad</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Lead Score (Puntuación)</span>
+            <span id="detail-score-badge" class="score-badge">Score</span>
+          </div>
+          <div class="info-item" id="detail-lost-reason-item" style="display: none;">
+            <span class="info-label">Motivo de Pérdida</span>
+            <span id="detail-lost-reason" class="info-value"
+              style="color: var(--color-error); font-weight: 600;">-</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Nivel de Conocimiento</span>
+            <span id="detail-nivel" class="info-value" style="font-weight: 600;">Principiante</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Días Preferidos</span>
+            <span id="detail-dia" class="info-value" style="font-weight: 600;">Lunes a Viernes</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Horario Preferido</span>
+            <span id="detail-horario" class="info-value" style="font-weight: 600;">9am - 11am</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Fecha de Registro</span>
+            <span id="detail-fecha" class="info-value">Fecha</span>
+          </div>
+          <div class="info-item"
+            style="grid-column: span 2; margin-top: 6px; background: rgba(247, 172, 5, 0.05); padding: 10px; border: 1px dashed rgba(247, 172, 5, 0.25); border-radius: var(--border-radius-sm);">
+            <span class="info-label"
+              style="font-weight: 600; color: var(--color-primary); display: flex; align-items: center; gap: 4px;">
+              📅 Próximo Seguimiento (Agenda)
+            </span>
+            <div style="display: flex; gap: 8px; margin-top: 6px;">
+              <input type="date" id="detail-next-contact" onchange="saveNextContactDate()"
+                style="padding: 6px 10px; font-size: 13px; flex-grow: 1;">
+              <button class="btn btn-ghost btn-icon-sm" onclick="clearNextContactDate()" title="Limpiar Fecha"
+                style="color: var(--color-error); padding: 8px;">
+                <i data-lucide="calendar-x" style="width: 14px; height: 14px;"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SEGUIMIENTO ACADÉMICO POST-VENTA (ONLY IF stage === 'Inscrito') -->
+      <div class="detail-section" id="detail-academic-section" style="display: none;">
+        <h5>Seguimiento Académico (Post-Venta)</h5>
+        <div class="detail-info-grid"
+          style="gap: 12px; background: rgba(109, 170, 69, 0.05); padding: 16px; border: 1px dashed rgba(109, 170, 69, 0.2); border-radius: var(--border-radius-sm);">
+          <div class="info-item">
+            <span class="info-label">Estado Académico</span>
+            <select id="detail-academic-status" onchange="saveAcademicInfo()"
+              style="padding: 6px 10px; font-size: 13px;">
+              <option value="Cursando">Cursando 📖</option>
+              <option value="Graduado">Graduado 🎓</option>
+              <option value="Retirado">Retirado ❌</option>
+            </select>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Grupo / Cohorte</span>
+            <select id="detail-academic-group" onchange="saveAcademicInfo()"
+              style="padding: 6px 10px; font-size: 13px;">
+              <!-- Filled dynamically in JS -->
+            </select>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Fecha de Inicio</span>
+            <input type="date" id="detail-academic-start-date" onchange="saveAcademicInfo()"
+              style="padding: 6px 10px; font-size: 13px;">
+          </div>
+          <div class="info-item">
+            <span class="info-label">Certificado Entregado</span>
+            <select id="detail-academic-certificate" onchange="saveAcademicInfo()"
+              style="padding: 6px 10px; font-size: 13px;">
+              <option value="No">No</option>
+              <option value="Sí">Sí</option>
+            </select>
+          </div>
+          <div class="info-item" style="display: none;">
+            <span class="info-label">Asistencia (%)</span>
+            <input type="number" id="detail-academic-attendance" min="0" max="100" placeholder="Ej. 90"
+              onchange="saveAcademicInfo()" style="padding: 6px 10px; font-size: 13px;">
+          </div>
+          <div class="info-item" style="display: none;">
+            <span class="info-label">Nota Académica (%)</span>
+            <input type="number" id="detail-academic-grade" min="0" max="100" placeholder="Ej. 85"
+              onchange="saveAcademicInfo()" style="padding: 6px 10px; font-size: 13px;">
+          </div>
+          <div class="info-item" id="print-certificate-container"
+            style="grid-column: span 2; display: none !important; margin-top: 8px;">
+            <button type="button" class="btn btn-success btn-full" onclick="printStudentCertificate(selectedStudent.id)"
+              style="display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 12px; font-weight: 600; padding: 10px; width: 100%;">
+              <i data-lucide="award" style="width: 16px; height: 16px;"></i> Imprimir Diploma / Certificado
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- CONTROL Y HISTORIAL DE PAGOS (ONLY IF stage === 'Inscrito') -->
+      <div class="detail-section" id="detail-payments-section" style="display: none;">
+        <div class="notes-header">
+          <h5>Control e Historial de Pagos</h5>
+          <span id="detail-payment-status-badge" class="badge"
+            style="font-weight: 700; font-size: 11px; padding: 4px 8px;">-</span>
+        </div>
+        <div
+          style="background: rgba(109, 170, 69, 0.05); padding: 16px; border: 1px dashed rgba(109, 170, 69, 0.2); border-radius: var(--border-radius-sm); display: flex; flex-direction: column; gap: 12px;">
+
+          <div style="display: flex; gap: 12px;">
+            <div class="info-item" style="flex: 1;">
+              <span class="info-label">Costo Total (USD)</span>
+              <input type="number" id="detail-payment-cost" placeholder="Ej. 80" onchange="saveAcademicInfo()"
+                style="padding: 6px 10px; font-size: 13px; width: 100%;">
+            </div>
+            <div class="info-item" style="flex: 1; display: flex; flex-direction: column; justify-content: center;">
+              <span class="info-label" style="display: block;">Total Pagado</span>
+              <strong id="detail-payment-total-paid"
+                style="font-size: 14px; color: var(--color-success); font-family: var(--font-display);">$0 USD</strong>
+            </div>
+            <div class="info-item" style="flex: 1; display: flex; flex-direction: column; justify-content: center;">
+              <span class="info-label" style="display: block;">Saldo Restante</span>
+              <strong id="detail-payment-balance"
+                style="font-size: 14px; color: var(--color-text); font-family: var(--font-display); font-weight: 700;">$0
+                USD</strong>
+            </div>
+          </div>
+
+          <button type="button" class="btn btn-primary btn-full" onclick="generateStudentInvoicePDF()"
+            style="display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 12px; font-weight: 600; background-color: var(--color-primary); color: white; padding: 10px; border-radius: var(--border-radius-sm); margin-top: 4px;">
+            <i data-lucide="file-text" style="width: 16px; height: 16px;"></i> Generar Recibo PDF
+          </button>
+          
+          <!-- Document buttons (PDF actions) -->
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px;">
+            <button type="button" class="btn btn-secondary btn-full" onclick="generateStudentEnrollmentCertificatePDF()"
+              style="display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 11px; padding: 8px; border-radius: var(--border-radius-sm); border: 1.5px solid var(--color-border); background: transparent; cursor: pointer; color: var(--color-text);">
+              <i data-lucide="book-open" style="width: 14px; height: 14px; color: var(--color-primary);"></i> Constancia
+            </button>
+            <button type="button" class="btn btn-secondary btn-full" onclick="generateStudentContractPDF()"
+              style="display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 11px; padding: 8px; border-radius: var(--border-radius-sm); border: 1.5px solid var(--color-border); background: transparent; cursor: pointer; color: var(--color-text);">
+              <i data-lucide="file-signature" style="width: 14px; height: 14px; color: var(--color-primary);"></i> Contrato
+            </button>
+            <button type="button" class="btn btn-secondary btn-full" onclick="generateStudentStatementPDF()"
+              style="display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 11px; padding: 8px; border-radius: var(--border-radius-sm); border: 1.5px solid var(--color-border); background: transparent; cursor: pointer; color: var(--color-text);">
+              <i data-lucide="calculator" style="width: 14px; height: 14px; color: var(--color-primary);"></i> Est. Cuenta
+            </button>
+            <button type="button" class="btn btn-secondary btn-full" onclick="generateStudentPaymentSchedulePDF()"
+              style="display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 11px; padding: 8px; border-radius: var(--border-radius-sm); border: 1.5px solid var(--color-border); background: transparent; cursor: pointer; color: var(--color-text);">
+              <i data-lucide="calendar" style="width: 14px; height: 14px; color: var(--color-primary);"></i> Compromiso
+            </button>
+            <button type="button" class="btn btn-secondary btn-full" onclick="generateStudentFreezeActPDF()"
+              style="grid-column: span 2; display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 11px; padding: 8px; border-radius: var(--border-radius-sm); border: 1.5px solid var(--color-border); background: transparent; cursor: pointer; color: var(--color-text);">
+              <i data-lucide="snowflake" style="width: 14px; height: 14px; color: var(--color-primary);"></i> Acta de Congelación
+            </button>
+          </div>
+
+          <!-- Historial de abonos -->
+          <div style="margin-top: 8px;">
+            <span class="info-label"
+              style="font-weight: 600; display: block; margin-bottom: 6px; color: var(--color-text-muted);">Abonos
+              Realizados</span>
+            <div id="detail-payment-history-list"
+              style="display: flex; flex-direction: column; gap: 6px; max-height: 150px; overflow-y: auto; padding-right: 4px;">
+              <!-- History items will be rendered here dynamically -->
+            </div>
+          </div>
+
+          <!-- Formulario rápido para añadir abono -->
+          <form id="payment-add-form" onsubmit="addStudentPayment(event)"
+            style="border-top: 1px solid rgba(109, 170, 69, 0.15); padding-top: 12px; margin-top: 4px; display: flex; flex-direction: column; gap: 8px;">
+            <span class="info-label" style="font-weight: 600; color: var(--color-success);">Registrar Nuevo Abono</span>
+            <div style="display: flex; gap: 8px;">
+              <input type="number" id="new-payment-amount" placeholder="Monto USD" required
+                style="padding: 6px 10px; font-size: 13px; width: 100px; flex-shrink: 0;"
+                oninput="updatePaymentAmountVESHelper(this.value)">
+              <select id="new-payment-method" style="padding: 6px 10px; font-size: 13px; flex-grow: 1;">
+                <option value="Zelle">Zelle</option>
+                <option value="Efectivo">Efectivo 💵</option>
+                <option value="Pago Móvil">Pago Móvil 📱</option>
+                <option value="Transferencia">Transferencia 🏛️</option>
+                <option value="Paypal">Paypal</option>
+              </select>
+              <input type="date" id="new-payment-date"
+                style="padding: 5px 8px; font-size: 12px; width: 125px; flex-shrink: 0;">
+            </div>
+            <span id="new-payment-amount-ves-helper"
+              style="font-size: 11.5px; color: var(--color-success); font-weight: 500; display: none; margin-top: -2px; margin-bottom: 2px; text-align: left;">Equivale
+              a: 0.00 VES</span>
+            <div
+              style="display: flex; gap: 8px; align-items: center; background: rgba(0, 0, 0, 0.05); padding: 6px; border-radius: var(--border-radius-sm); border: 1px dashed rgba(255, 255, 255, 0.05);">
+              <span class="info-label"
+                style="font-size: 11px; margin: 0; white-space: nowrap; color: var(--color-text-muted);">Siguiente
+                Cobro:</span>
+              <input type="date" id="new-payment-next-date"
+                onchange="document.getElementById('new-payment-next-days-preset').value = 'custom';"
+                style="padding: 4px 6px; font-size: 11px; width: 120px; flex-shrink: 0;">
+              <select id="new-payment-next-days-preset" onchange="updateNextPaymentDatePreset()"
+                style="padding: 4px 6px; font-size: 11px; flex-grow: 1;">
+                <option value="30">En 30 días</option>
+                <option value="15">En 15 días</option>
+                <option value="7">En 7 días</option>
+                <option value="custom">Personalizado</option>
+              </select>
+            </div>
+            <div style="display: flex; gap: 8px;">
+              <input type="text" id="new-payment-ref" placeholder="Ref. / Nota opcional..."
+                style="padding: 6px 10px; font-size: 13px; flex-grow: 1;">
+              <button type="submit" class="btn btn-success btn-sm"
+                style="padding: 0 14px; height: 32px; font-size: 12px; display: flex; align-items: center; gap: 4px; background-color: var(--color-success); color: white;">
+                Registrar
+              </button>
+            </div>
+          </form>
+
+        </div>
+      </div>
+
+      <!-- TAREAS DE SEGUIMIENTO (TO-DO LIST) -->
+      <div class="detail-section">
+        <div class="notes-header">
+          <h5>Tareas de Seguimiento</h5>
+          <span id="detail-tasks-count" class="badge-count">0</span>
+        </div>
+        <div class="notes-list" id="detail-tasks-list" style="max-height: 180px; overflow-y: auto;">
+          <!-- Tasks list -->
+        </div>
+        <form id="task-form" onsubmit="addSelectedStudentTask(event)" class="note-input-container">
+          <input type="text" id="new-task-text" placeholder="Nueva tarea..." required
+            style="padding: 8px 10px; font-size: 13px; flex-grow: 1;">
+          <input type="date" id="new-task-date" style="padding: 7px 8px; font-size: 12px; width: 120px;">
+          <button type="submit" class="btn btn-primary btn-sm btn-icon" style="padding: 8px 10px;"><i
+              data-lucide="plus"></i></button>
+        </form>
+      </div>
+
+      <div class="detail-section">
+        <div class="notes-header">
+          <h5>Línea de Tiempo del Alumno</h5>
+          <span id="detail-notes-count" class="badge-count">0</span>
+        </div>
+        <div class="notes-list" id="detail-notes-list">
+          <!-- Notes list -->
+        </div>
+        <div class="quick-notes-pills" style="display: flex; gap: 6px; margin-bottom: 8px;">
+          <button type="button" class="badge"
+            style="cursor: pointer; background: rgba(79, 152, 163, 0.1); color: var(--color-primary); border: 1px solid rgba(79, 152, 163, 0.2); font-size: 11px; padding: 4px 8px; border-radius: 12px; font-weight: 500;"
+            onclick="insertQuickNote('📞 No contestó llamada')">📞 No contestó</button>
+          <button type="button" class="badge"
+            style="cursor: pointer; background: rgba(109, 170, 69, 0.1); color: var(--color-success); border: 1px solid rgba(109, 170, 69, 0.2); font-size: 11px; padding: 4px 8px; border-radius: 12px; font-weight: 500;"
+            onclick="insertQuickNote('✉️ Plan de estudio enviado')">✉️ Plan enviado</button>
+          <button type="button" class="badge"
+            style="cursor: pointer; background: rgba(232, 175, 52, 0.1); color: var(--color-warning); border: 1px solid rgba(232, 175, 52, 0.2); font-size: 11px; padding: 4px 8px; border-radius: 12px; font-weight: 500;"
+            onclick="insertQuickNote('⏰ Re-contactar pronto')">⏰ Re-contactar</button>
+        </div>
+        <form id="note-form" onsubmit="addSelectedStudentNote(event)" class="note-input-container"
+          style="flex-direction: column; gap: 8px; align-items: stretch;">
+          <div style="display: flex; width: 100%; gap: 8px; align-items: flex-end;">
+            <select id="new-note-channel"
+              style="padding: 8px 10px; font-size: 13px; width: 130px; flex-shrink: 0; height: 38px;">
+              <option value="Nota">📝 Nota</option>
+              <option value="WhatsApp">💬 WhatsApp</option>
+              <option value="Llamada">📞 Call / Zoom</option>
+              <option value="Instagram">📸 Instagram</option>
+              <option value="Correo">✉️ Correo</option>
+            </select>
+            <textarea id="new-note-text" placeholder="Escribe una nota..." required rows="1"
+              style="flex-grow: 1; min-height: 38px; height: 38px; resize: none; padding: 8px 12px;"></textarea>
+            <button type="submit" class="btn btn-primary btn-sm btn-icon" style="height: 38px; padding: 0 14px;"><i
+                data-lucide="send"></i></button>
+          </div>
+        </form>
+      </div>
+    </div>
+    <div class="detail-footer" style="flex-wrap: wrap; gap: 8px;">
+      <button class="btn btn-ghost btn-danger" onclick="deleteSelectedStudent()" style="margin-right: auto;">
+        <i data-lucide="trash-2"></i> Eliminar
+      </button>
+      <button class="btn btn-secondary" onclick="cloneSelectedStudent()" title="Registrar a este alumno en otro curso">
+        <i data-lucide="copy"></i> Inscribir en otro
+      </button>
+      <button class="btn btn-secondary" onclick="editSelectedStudent()">
+        <i data-lucide="edit-3"></i> Editar
+      </button>
+    </div>
+  </div>
+  <!-- MODAL: MOTIVO DE PÉRDIDA -->
+  <template id="lost-reason-modal-template">
+    <div id="lost-reason-modal" class="modal-overlay" onclick="handleModalOverlayClick(event, 'lost-reason-modal')"
+      style="z-index: 1000;">
+      <div class="modal-card" style="max-width: 400px; width: 90%;">
+        <div class="modal-header">
+          <h3>Indicar Motivo de Pérdida</h3>
+          <button class="btn btn-ghost close-btn btn-icon-sm" onclick="closeLostReasonModal()"><i
+              data-lucide="x"></i></button>
+        </div>
+        <form id="lost-reason-form" onsubmit="saveLostReason(event)">
+          <div class="form-group" style="margin-bottom: 16px;">
+            <label for="lost-reason-select">¿Por qué se perdió este prospecto? *</label>
+            <select id="lost-reason-select" required onchange="handleLostReasonSelectChange()"
+              style="width: 100%; padding: 8px; background: var(--color-bg); border: 1px solid var(--color-border); color: var(--color-text); border-radius: var(--border-radius-sm);">
+              <option value="Precio Alto">Precio Alto 💸</option>
+              <option value="Horario Incompatible">Horario Incompatible ⏰</option>
+              <option value="Falta de Interés">Falta de Interés 📉</option>
+              <option value="Prefiere la Competencia">Prefiere la Competencia 🏛️</option>
+              <option value="Ghosting (No responde)">No volvió a responder 👻</option>
+              <option value="Otro">Otro Motivo 📝</option>
+            </select>
+          </div>
+          <div class="form-group" id="lost-reason-other-group" style="display: none; margin-bottom: 16px;">
+            <label for="lost-reason-other-input">Especificar motivo *</label>
+            <input type="text" id="lost-reason-other-input" placeholder="Ej. Se mudó de ciudad..." style="width: 100%;">
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-ghost" onclick="closeLostReasonModal()">Cancelar</button>
+            <button type="submit" class="btn btn-primary">Guardar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </template>
+
+  <!-- MODAL: HISTORIAL DE AUDITORÍA (LOGS) -->
+  <template id="audit-modal-template">
+    <div id="audit-modal" class="modal-overlay" onclick="handleModalOverlayClick(event, 'audit-modal')">
+      <div class="modal-card" style="max-width: 850px; width: 95%;">
+        <div class="modal-header">
+          <h3 style="display: flex; align-items: center; gap: 8px;">
+            <i data-lucide="shield-check" style="color: var(--color-primary); width: 22px; height: 22px;"></i>
+            Historial de Auditoría (Logs)
+          </h3>
+          <button class="btn btn-ghost close-btn btn-icon-sm" onclick="closeAuditModal()"><i data-lucide="x"></i></button>
+        </div>
+        
+        <!-- Filter Controls -->
+        <div style="display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; background: rgba(255,255,255,0.02); padding: 16px; border-radius: var(--border-radius-md); border: 1px solid var(--color-border);">
+          <!-- Search box -->
+          <div class="form-group" style="margin: 0; flex-grow: 1; min-width: 200px;">
+            <label style="font-size: 11px; font-weight: 600; text-transform: uppercase; margin-bottom: 4px; display: block; color: var(--color-text-muted);">Buscar en Descripción</label>
+            <div style="position: relative;">
+              <input type="text" id="audit-search" placeholder="Buscar por alumno, notas o texto..." oninput="renderAuditTable()" style="width: 100%; padding: 8px 12px 8px 32px; font-size: 13px; background: var(--color-bg); border: 1px solid var(--color-border); color: var(--color-text); border-radius: var(--border-radius-sm); outline: none;">
+              <i data-lucide="search" style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); width: 14px; height: 14px; color: var(--color-text-muted);"></i>
+            </div>
+          </div>
+          <!-- Type Filter -->
+          <div class="form-group" style="margin: 0; width: 160px;">
+            <label style="font-size: 11px; font-weight: 600; text-transform: uppercase; margin-bottom: 4px; display: block; color: var(--color-text-muted);">Acción / Categoría</label>
+            <select id="audit-filter-type" onchange="renderAuditTable()" style="width: 100%; padding: 8px; font-size: 13px; background: var(--color-bg); border: 1px solid var(--color-border); color: var(--color-text); border-radius: var(--border-radius-sm); outline: none; cursor: pointer;">
+              <option value="all">Todos</option>
+              <option value="nuevo">Nuevos Registros</option>
+              <option value="edicion">Edición / Ajustes</option>
+              <option value="etapa">Etapa Kanban</option>
+              <option value="nota">Notas de Alumnos</option>
+              <option value="eliminacion">Eliminaciones</option>
+              <option value="importacion">Importaciones</option>
+            </select>
+          </div>
+          <!-- User Filter -->
+          <div class="form-group" style="margin: 0; width: 180px;">
+            <label style="font-size: 11px; font-weight: 600; text-transform: uppercase; margin-bottom: 4px; display: block; color: var(--color-text-muted);">Usuario / Responsable</label>
+            <select id="audit-filter-user" onchange="renderAuditTable()" style="width: 100%; padding: 8px; font-size: 13px; background: var(--color-bg); border: 1px solid var(--color-border); color: var(--color-text); border-radius: var(--border-radius-sm); outline: none; cursor: pointer;">
+              <option value="all">Todos</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Audit Trail Table Container -->
+        <div style="max-height: 380px; overflow-y: auto; border: 1px solid var(--color-border); border-radius: var(--border-radius-md); background: var(--color-bg); margin-bottom: 12px;">
+          <table class="students-table" style="width: 100%; border-collapse: collapse; font-size: 13px; color: var(--color-text);">
+            <thead>
+              <tr style="background: rgba(255,255,255,0.02); border-bottom: 1px solid var(--color-border); text-align: left;">
+                <th style="padding: 12px 10px; font-weight: 600; color: var(--color-text-muted); width: 160px; font-size: 11px; text-transform: uppercase; pointer-events: none;">Fecha y Hora</th>
+                <th style="padding: 12px 10px; font-weight: 600; color: var(--color-text-muted); width: 110px; font-size: 11px; text-transform: uppercase; pointer-events: none;">Categoría</th>
+                <th style="padding: 12px 10px; font-weight: 600; color: var(--color-text-muted); width: 140px; font-size: 11px; text-transform: uppercase; pointer-events: none;">Responsable</th>
+                <th style="padding: 12px 10px; font-weight: 600; color: var(--color-text-muted); font-size: 11px; text-transform: uppercase; pointer-events: none;">Descripción</th>
+              </tr>
+            </thead>
+            <tbody id="audit-table-body">
+              <!-- Rendered dynamically -->
+            </tbody>
+          </table>
+        </div>
+        
+        <div style="display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: var(--color-text-muted); flex-wrap: wrap; gap: 10px; border-top: 1px solid var(--color-border); padding-top: 12px;">
+          <span id="audit-results-count">Mostrando 0 de 0 registros</span>
+          <div style="display: flex; gap: 8px;">
+            <button class="btn btn-ghost" onclick="clearAuditTrail()" style="padding: 6px 12px; font-size: 11px; border: 1px solid var(--color-border); border-radius: var(--border-radius-sm); color: var(--color-error); background: transparent; cursor: pointer;">
+              <i data-lucide="trash-2" style="width: 12px; height: 12px; margin-right: 4px; vertical-align: middle; display: inline-block;"></i> Limpiar Bitácora
+            </button>
+            <button class="btn btn-ghost" onclick="closeAuditModal()" style="padding: 6px 12px; font-size: 11px; border: 1px solid var(--color-border); border-radius: var(--border-radius-sm);">Cerrar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </template>
+
+  <!-- MODAL: AJUSTAR METAS COMERCIALES -->
+  <template id="goals-modal-template">
+    <div id="goals-modal" class="modal-overlay" onclick="handleModalOverlayClick(event, 'goals-modal')">
+      <div class="modal-card" style="max-width: 400px; width: 90%;">
+        <div class="modal-header">
+          <h3>Configurar Metas del Mes</h3>
+          <button class="btn btn-ghost close-btn btn-icon-sm" onclick="closeGoalsModal()"><i
+              data-lucide="x"></i></button>
+        </div>
+        <form id="goals-form" onsubmit="saveGoals(event)">
+          <div class="form-group" style="margin-bottom: 16px;">
+            <label for="goal-revenue-input">Meta de Recaudación ($ USD) *</label>
+            <input type="number" id="goal-revenue-input" required min="1" placeholder="Ej. 2000"
+              style="width: 100%; padding: 8px; background: var(--color-bg); border: 1px solid var(--color-border); color: var(--color-text); border-radius: var(--border-radius-sm);">
+          </div>
+          <div class="form-group" style="margin-bottom: 16px;">
+            <label for="goal-enrollment-input">Meta de Nuevos Inscritos (Alumnos) *</label>
+            <input type="number" id="goal-enrollment-input" required min="1" placeholder="Ej. 10"
+              style="width: 100%; padding: 8px; background: var(--color-bg); border: 1px solid var(--color-border); color: var(--color-text); border-radius: var(--border-radius-sm);">
+          </div>
+          <div class="modal-footer" style="display: flex; gap: 8px; justify-content: flex-end; margin-top: 16px;">
+            <button type="button" class="btn btn-ghost" onclick="closeGoalsModal()">Cancelar</button>
+            <button type="submit" class="btn btn-primary">Guardar Metas</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </template>
+
+  <!-- MODAL: WHATSAPP MASIVO POR COHORTE -->
+  <template id="bulk-whatsapp-modal-template">
+    <div id="bulk-whatsapp-modal" class="modal-overlay" onclick="handleModalOverlayClick(event, 'bulk-whatsapp-modal')">
+      <div class="modal-card" style="max-width: 500px; width: 90%;">
+        <div class="modal-header">
+          <h3 id="bulk-wa-title">Envío Masivo por WhatsApp</h3>
+          <button class="btn btn-ghost close-btn btn-icon-sm" onclick="closeBulkWaModal()"><i
+              data-lucide="x"></i></button>
+        </div>
+        <div class="modal-body" style="display: flex; flex-direction: column; gap: 14px;">
+          <div class="form-group">
+            <label for="bulk-wa-template-select">Seleccionar Plantilla de Mensaje</label>
+            <select id="bulk-wa-template-select" onchange="previewBulkWaMessage()"
+              style="width: 100%; padding: 8px; background: var(--color-bg); border: 1px solid var(--color-border); color: var(--color-text); border-radius: var(--border-radius-sm);">
+              <!-- Loaded dynamically in JS -->
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Previsualización del Mensaje</label>
+            <div id="bulk-wa-preview-box"
+              style="background: rgba(0,0,0,0.05); padding: 12px; border-radius: var(--border-radius-sm); font-size: 12.5px; color: var(--color-text-muted); min-height: 50px; white-space: pre-wrap; border: 1px solid var(--color-border); line-height: 1.4;">
+              Selecciona una plantilla para ver la vista previa.
+            </div>
+          </div>
+          <div class="form-group">
+            <label id="bulk-wa-student-count">Destinatarios (0 Alumnos)</label>
+            <div id="bulk-wa-student-list"
+              style="max-height: 200px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; border: 1px solid var(--color-border); padding: 10px; border-radius: var(--border-radius-sm); margin-top: 6px; background: rgba(0,0,0,0.02);">
+              <!-- Loaded dynamically in JS -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </template>
+
+  <!-- MODAL: ALERTA DE DUPLICADO -->
+  <template id="duplicate-modal-template">
+    <div id="duplicate-modal" class="modal-overlay" onclick="handleModalOverlayClick(event, 'duplicate-modal')"
+      style="z-index: 1100;">
+      <div class="modal-card" style="max-width: 420px; width: 90%;">
+        <div class="modal-header">
+          <h3 style="color: #f44336; display: flex; align-items: center; gap: 8px;">
+            <i data-lucide="alert-triangle"></i> Alerta de Duplicado
+          </h3>
+          <button class="btn btn-ghost close-btn btn-icon-sm" onclick="closeDuplicateModal()"><i
+              data-lucide="x"></i></button>
+        </div>
+        <div class="modal-body" style="font-size: 13.5px; line-height: 1.6; color: var(--color-text);">
+          <p>Se ha detectado un prospecto existente en el CRM con la misma información de contacto:</p>
+          <div
+            style="background: var(--color-hover); border-left: 4px solid var(--color-primary); padding: 12px; border-radius: var(--border-radius-sm); margin: 12px 0; display: flex; flex-direction: column; gap: 4px;">
+            <div><b>Nombre:</b> <span id="dup-modal-name">-</span></div>
+            <div><b>Etapa:</b> <span id="dup-modal-stage">-</span></div>
+            <div><b>WhatsApp:</b> <span id="dup-modal-tel">-</span></div>
+            <div><b>Email:</b> <span id="dup-modal-email">-</span></div>
+          </div>
+          <p style="margin-top: 12px; font-weight: 500;">¿Qué deseas hacer?</p>
+        </div>
+        <div class="modal-footer" style="gap: 8px; justify-content: space-between;">
+          <button type="button" class="btn btn-ghost" onclick="closeDuplicateModal()" style="flex: 1;">Cancelar
+            Registro</button>
+          <button type="button" class="btn btn-primary" onclick="proceedDuplicateRegistration()"
+            style="flex: 1; background: #f44336; border-color: #f44336; color: #ffffff;">Registrar Igualmente</button>
+        </div>
+      </div>
+    </div>
+  </template>
+
+  <!-- MODAL: DETALLES DEL DÍA DEL CALENDARIO -->
+  <template id="calendar-day-modal-template">
+    <div id="calendar-day-modal" class="modal-overlay" onclick="handleModalOverlayClick(event, 'calendar-day-modal')"
+      style="z-index: 1000;">
+      <div class="modal-card" style="max-width: 450px; width: 90%;">
+        <div class="modal-header">
+          <h3 id="calendar-day-modal-title">Actividades del Día</h3>
+          <button class="btn btn-ghost close-btn btn-icon-sm" onclick="closeCalendarDayModal()"><i
+              data-lucide="x"></i></button>
+        </div>
+        <div class="modal-body" style="display: flex; flex-direction: column; gap: 14px;">
+          <div id="calendar-day-events-list"
+            style="display: flex; flex-direction: column; gap: 8px; max-height: 200px; overflow-y: auto;">
+            <!-- Loaded dynamically -->
+          </div>
+          <form id="calendar-quick-task-form" onsubmit="saveCalendarQuickTask(event)"
+            style="border-top: 1px solid var(--color-border); padding-top: 14px; margin-top: 8px; display: flex; flex-direction: column; gap: 8px;">
+            <span style="font-weight: 600; font-size: 13px; color: var(--color-primary);">Programar Tarea para este
+              Día</span>
+            <div class="form-group">
+              <input type="text" id="cal-task-desc" placeholder="Descripción de la tarea (Ej. Llamar para cobrar)..."
+                required
+                style="width: 100%; padding: 8px; background: var(--color-bg); border: 1px solid var(--color-border); color: var(--color-text); border-radius: var(--border-radius-sm);">
+            </div>
+            <div style="display: flex; gap: 8px; align-items: center;">
+              <select id="cal-task-student" required
+                style="flex-grow: 1; padding: 8px; background: var(--color-bg); border: 1px solid var(--color-border); color: var(--color-text); border-radius: var(--border-radius-sm); font-size: 13px;">
+                <!-- Loaded dynamically with active students -->
+              </select>
+              <button type="submit" class="btn btn-primary btn-sm" style="padding: 0 16px; height: 36px;">Crear</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </template>
+
+  <!-- CONFETTI CANVAS CONTROLLER -->
+  <div id="confetti-container"></div>
+
+  <!-- TOAST NOTIFICATION CONTAINER -->
+  <div id="toast-container"></div>
+
+  <!-- MODAL: REGISTRO RÁPIDO DE ABONOS (QUICK PAYMENT LOG - Opción B) -->
+  <template id="quick-payment-modal-template">
+    <div id="quick-payment-modal" class="modal-overlay" onclick="handleModalOverlayClick(event, 'quick-payment-modal')"
+      style="z-index: 1000;">
+      <div class="modal-card" style="max-width: 400px; width: 90%;">
+        <div class="modal-header">
+          <h3>Registrar Abono Rápido</h3>
+          <button class="btn btn-ghost close-btn btn-icon-sm" onclick="closeQuickPaymentModal()"><i
+              data-lucide="x"></i></button>
+        </div>
+        <form id="quick-payment-form" onsubmit="saveQuickPayment(event)">
+          <input type="hidden" id="quick-payment-student-id">
+          <div
+            style="background: rgba(255, 255, 255, 0.02); padding: 12px; border-radius: var(--border-radius-sm); border: 1px solid var(--color-border); margin-bottom: 16px; font-size: 13px; display: flex; flex-direction: column; gap: 4px; color: var(--color-text);">
+            <div><strong>Alumno:</strong> <span id="quick-payment-student-name">-</span></div>
+            <div><strong>Curso:</strong> <span id="quick-payment-student-course">-</span></div>
+            <div style="color: var(--color-error); font-weight: 700; margin-top: 4px;"><strong>Saldo Deudor:</strong>
+              <span id="quick-payment-student-balance">-</span></div>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 16px;">
+            <label for="quick-payment-amount">Monto del Abono ($ USD) *</label>
+            <input type="number" id="quick-payment-amount" required min="0.01" step="0.01"
+              style="width: 100%; padding: 8px; background: var(--color-bg); border: 1px solid var(--color-border); color: var(--color-text); border-radius: var(--border-radius-sm);">
+          </div>
+
+          <div class="form-group" style="margin-bottom: 16px;">
+            <label for="quick-payment-date">Fecha de Pago *</label>
+            <input type="date" id="quick-payment-date" required
+              style="width: 100%; padding: 8px; background: var(--color-bg); border: 1px solid var(--color-border); color: var(--color-text); border-radius: var(--border-radius-sm);">
+          </div>
+
+          <div class="modal-footer" style="display: flex; gap: 8px; justify-content: flex-end; margin-top: 16px;">
+            <button type="button" class="btn btn-ghost" onclick="closeQuickPaymentModal()">Cancelar</button>
+            <button type="submit" class="btn btn-primary">Registrar Pago</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </template>
+
+  <!-- APPLICATION JAVASCRIPT (MODULAR) -->
+  <script src="js/verticals.js" defer></script>
+  <script src="js/state.js" defer></script>
+  <script src="js/helpers.js" defer></script>
+  <script src="js/db.js" defer></script>
+  <script src="js/analytics.js" defer></script>
+  <script src="js/modals.js" defer></script>
+  <script src="js/render.js" defer></script>
+  <script src="js/app.js" defer></script>
+</body>
+
+</html>
